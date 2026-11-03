@@ -17,6 +17,7 @@
 | 站点目录 | `/www/wwwroot/mostnote.com` |
 | Web 根目录 | `/www/wwwroot/mostnote.com/public` |
 | vhost | `/www/server/panel/vhost/nginx/mostnote.com.conf` |
+| 自动更新 | 已通过本地空清单禁用（`public/updates/stable/update.json`） |
 
 > 具体备份路径、数据库账号和密钥只记录在服务器与运维记录中，不写入仓库。
 
@@ -72,6 +73,7 @@ unzip plainpad-1.2.0.zip -d /www/wwwroot/mostnote.com.new
 cp /www/wwwroot/mostnote.com/.env /www/wwwroot/mostnote.com.new/.env
 rsync -a /www/wwwroot/mostnote.com/storage/ /www/wwwroot/mostnote.com.new/storage/
 rsync -a /www/wwwroot/mostnote.com/public/.well-known/ /www/wwwroot/mostnote.com.new/public/.well-known/
+rsync -a /www/wwwroot/mostnote.com/public/updates/ /www/wwwroot/mostnote.com.new/public/updates/
 
 # 3. 权限
 chown -R www:www /www/wwwroot/mostnote.com.new
@@ -84,7 +86,6 @@ php artisan config:clear
 php artisan route:clear
 php artisan view:clear
 php artisan cache:clear
-php artisan config:cache
 php artisan route:cache
 
 # 5. 切换目录
@@ -93,6 +94,16 @@ mv /www/wwwroot/mostnote.com.new /www/wwwroot/mostnote.com
 ```
 
 如果使用软链接发布，可把 `current` 指向版本目录，切换时只替换软链接，回滚更快。
+
+> 当前 1.2.0 的 `AutoUpdateServiceProvider` 直接读取 `env('APP_REPOSITORY')`，执行 `config:cache` 后该值为空，
+> 管理员界面会出现更新解析错误。生产暂不启用 `config:cache`，每次发布使用 `config:clear`；待上游修复后再启用。
+
+## 自动更新
+
+本生产把 `APP_REPOSITORY` 指向 `https://mostnote.com/updates/stable`，该目录的 `update.json` 为 `{}`，
+因此自动更新始终没有可用版本，避免管理员误装上游版本覆盖本仓库定制。若要启用自动更新，必须改为本项目
+自有的签名更新清单，并同步维护 `APP_UPDATE_PUBLIC_KEYS`。每次发布都要像 `.well-known/` 一样保留
+`public/updates/`。
 
 ## 发布后验证
 

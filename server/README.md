@@ -46,11 +46,13 @@ php artisan serve
 
   ```bash
   php artisan migrate --force
-  php artisan config:cache
+  php artisan config:clear
   php artisan route:cache
   php artisan view:clear
   php artisan cache:clear
   ```
+
+当前 1.2.0 暂不启用 `config:cache`：更新服务直接读取 `env('APP_REPOSITORY')`，缓存配置后会得到空值并导致更新检查失败。
 
 完整的发布、备份与回滚流程见 [../docs/deployment.md](../docs/deployment.md)。
 
