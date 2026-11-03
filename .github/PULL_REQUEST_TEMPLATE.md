@@ -14,7 +14,7 @@ Fixes #
 
 ## Checklist
 
-- [ ] Targets the `develop` branch (see [CONTRIBUTING.md](CONTRIBUTING.md))
+- [ ] Targets the `main` branch and follows [agents.md](../agents.md)
 - [ ] `CHANGELOG.md` updated under `[Unreleased]` (lines wrapped at 120 characters)
 - [ ] Server tests pass (`cd server && ./vendor/bin/phpunit`)
 - [ ] PHP formatted with Pint (`cd server && ./vendor/bin/pint`)

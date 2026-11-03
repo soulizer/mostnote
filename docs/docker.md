@@ -1,75 +1,95 @@
-# Docker
+# Docker 开发环境
 
-Run the development containers of Plainpad with Docker and Docker Compose utility. Docker allows you to compose 
-your application from microservices, without worrying about inconsistencies between development and production 
-environments and without locking into any platform or language. 
+仓库提供了一套 Docker Compose 开发环境，包含 nginx、php-fpm、MySQL、phpMyAdmin 和 Mailpit。开发环境与生产
+环境分离，禁止把开发容器中的代码或数据库直接同步到生产。
 
-Run `docker-compose up -d` to start the environment. 
+## 启动
 
-You will need modify the server's `.env` so that it matches the following example: 
+1. 在仓库根目录创建 `.env`，用于端口映射（该文件不提交）：
 
-``` 
-# This value is the name of your application. This value is used when the
-# framework needs to place the application's name in a notification or
-# any other location as required by the application or its packages.
-APP_NAME=Plainpad
+   ```bash
+   cat > .env <<'EOF'
+   NGINX_PORT=8080
+   MYSQL_PORT=3306
+   PHPMYADMIN_PORT=8081
+   MAILPIT_HTTP_PORT=8025
+   MAILPIT_SMTP_PORT=1025
+   EOF
+   ```
 
-# This value determines the "environment" your application is currently
-# running in. This may determine how you prefer to configure various
-# services the application utilizes. Set this in your ".env" file.
+2. 启动容器：
+
+   ```bash
+   docker compose up -d
+   ```
+
+3. 进入 php-fpm 容器初始化服务端：
+
+   ```bash
+   docker compose exec -T php-fpm bash
+   cd /var/www/html/server
+   cp .env.example .env
+   php artisan key:generate
+   php artisan migrate:fresh --seed
+   ```
+
+   > `migrate:fresh` 会清空数据库，仅限本地开发使用。
+
+4. 访问服务：
+
+   - 应用：`http://localhost:${NGINX_PORT}`，默认 `http://localhost:8080`
+   - phpMyAdmin：`http://localhost:${PHPMYADMIN_PORT}`
+   - Mailpit：`http://localhost:${MAILPIT_HTTP_PORT}`
+
+## 服务端 `.env`
+
+Docker 环境下数据库主机为服务名 `mysql`：
+
+```dotenv
+APP_NAME=MostNote
 APP_ENV=local
-
-# This key is used by the Illuminate encrypter service and should be set
-# to a random, 32 character string, otherwise these encrypted strings
-# swill not be safe. Please do this before deploying an application and
-# make sure you do not lose this key!
-APP_KEY=E6972E6A6DC41B193CD90ED830085859
-
-# When your application is in debug mode, detailed error messages with
-# stack traces will be shown on every error that occurs within your
-# application. If disabled, a simple generic error page is shown.
 APP_DEBUG=true
-
-# This URL is used by the console to properly generate URLs when using
-# the Artisan command line tool. You should set this to the root of
-# your application so that it is used when running Artisan tasks.
 APP_URL=http://localhost
-
-# This URL is used by the auto update mechanism to resolve available updates
-# whenever available. Change this only if you have your own Plainpad repository
-# configured.
-APP_REPOSITORY=https://cdn.alextselegidis.com/plainpad/updates/stable
-
-# Here you may specify which of the database connections below you wish
-# to use as your default connection for all database work. Of course
-# you may use many connections at once using the Database library.
 DB_CONNECTION=mysql
-
-# The database connection host, this defaults to "localhost" for most servers.
 DB_HOST=mysql
-
-# The database connection port, this defaults to "3306" for most servers.
 DB_PORT=3306
-
-# The database name to connect to, make sure the database is created.
 DB_DATABASE=plainpad
-
-# The database username for the connection.
 DB_USERNAME=user
-
-# The database password for the connection.
 DB_PASSWORD=password
-
 ```
 
-Enter the server container with `docker exect -it plainpad-php-fpm-1 bash` and run the seed the database with 
-`php artisan migrate:fresh --seed`. 
+生产环境必须使用 `APP_ENV=production`、`APP_DEBUG=false`，并配置独立的强密码。
 
-In the host machine the server is accessible from `http://localhost` and the database from `localhost:3306`.  
+## 前端开发
 
-You can remove the docker containers with `docker compose down --volumes`.
+```bash
+cd client
+npm ci
+npm start
+```
 
-You can then execute `npm start` from within the client directory and the php-fpm container to run the dev server in 
-development mode. 
+开发服务器运行在 3000 端口，nginx 会把非 `/api.php/` 请求反代到该端口。生产构建使用：
 
-[Back](readme.md)
+```bash
+npm run build
+```
+
+发布包请使用根目录的 `./build.sh` 生成，不要手工拼装。
+
+## 测试与格式化
+
+```bash
+cd server && ./vendor/bin/phpunit
+cd server && ./vendor/bin/pint
+cd client && npm test
+```
+
+## 停止与清理
+
+```bash
+docker compose down
+# 同时删除数据库卷（会丢失本地数据，仅限开发环境）
+docker compose down --volumes
+```
+
+[返回文档索引](readme.md)

@@ -1,61 +1,62 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# MostNote Server
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+MostNote 服务端是 Laravel 12 / PHP 8.2+ 的 JSON API，为 `client/` 中的 React 单页应用提供数据与鉴权。
 
-## About Laravel
+## 要求
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP >= 8.2
+- Composer 2
+- MySQL 8 / MariaDB
+- PHP 扩展：`curl`、`json`、`zip`、`mbstring`、`openssl`、`pdo`、`pdo_mysql`、`tokenizer`、`xml`、`fileinfo`
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 本地初始化
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+cp .env.example .env
+composer install
+php artisan key:generate
+php artisan migrate:fresh --seed   # 仅限本地开发
+php artisan serve
+```
 
-## Learning Laravel
+默认管理员：`admin@example.org` / `12345678`。
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 目录说明
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- `app/Http/Controllers/V1/`：API 控制器
+- `app/Http/Middleware/`：认证与管理员中间件
+- `app/Models/`：Note、Session、Setting、User
+- `app/Services/AutoUpdateService.php`：发布包下载与更新
+- `routes/api.php`：所有 `/v1` 路由
+- `tests/`：PHPUnit Feature/Unit 测试
 
-## Laravel Sponsors
+## 测试与格式化
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```bash
+./vendor/bin/phpunit
+./vendor/bin/pint
+```
 
-### Premium Partners
+## 生产部署
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[OP.GG](https://op.gg)**
+- Web 根目录指向 `public/`。
+- `storage/` 与 `bootstrap/cache/` 仅 PHP 进程用户可写，禁止 `chmod 777`。
+- 生产 `.env` 使用 `APP_ENV=production`、`APP_DEBUG=false`，权限 `600`。
+- 发布前执行迁移与缓存：
 
-## Contributing
+  ```bash
+  php artisan migrate --force
+  php artisan config:cache
+  php artisan route:cache
+  php artisan view:clear
+  php artisan cache:clear
+  ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+完整的发布、备份与回滚流程见 [../docs/deployment.md](../docs/deployment.md)。
 
-## Code of Conduct
+## 相关文档
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- [API 文档](../docs/api.md)
+- [安装部署](../docs/installation.md)
+- [升级指南](../docs/upgrade.md)
+- [项目规范](../agents.md)

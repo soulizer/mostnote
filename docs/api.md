@@ -1,260 +1,176 @@
-# API
+# API 文档
 
-## Introduction 
-
-Plainpad exposes a flexible REST API that will enable you to handle all the information of your installations through 
-HTTP requests. The API is using JSON as its data transaction format and features many best practices in order to make 
-the resources easily consumable. 
-
-## Making Requests
-
-The API supports Token based authentication which means that you will have to send the bearer token authentication 
-header with every request you make. This way you can ensure that no passwords will be stolen during the requests. 
-The API expects the username and password of an admin user. 
-
-You can get a new token by creating a new session by sending the user credentials as the payload. This is the actual 
-request that takes place while logging the user in. After a successful session creation you will receive a token that 
-can be used for every other request.  
-
-Header: 
-
-`Athorization: Bearer {SESSION-TOKEN-HERE}`
-
-
-The API honors the REST architecture which means that the client can use various HTTP verbs in order to perform various 
-operations on the available resources. For example, you should use a GET request for fetching resources, a POST for 
-creating new and PUT for updating existing ones in the database. Finally, a DELETE request will remove a resource from 
-the system. 
-
-GET requests accept some parameter helpers that enable the sort, search, pagination and minification of the response 
-information. Take a look in the following examples: 
-
-### Search
-
-Provide the `filter` parameter to perform a search in the resource.
+MostNote 通过 JSON REST API 暴露全部功能。生产基础地址：
 
 ```
-https://url/to/public/api.php/v1/notes?filter=keyword
+https://mostnote.com/api.php/v1
 ```
 
-### Sort 
+自建部署时把域名替换为实际地址；如果 Web 根目录直接指向 `public/`，也可以使用 `/api.php/v1`。所有请求和
+响应均使用 JSON，错误响应也始终是 JSON。
 
-Sort the results in ascending or descending direction by providing the respective sign and the property 
-name to be used for sorting. 
+## 认证
 
-```
-https://url/to/public/api.php/v1/notes?sort=id&direction=asc
-```
+API 使用 Bearer Token。先通过登录接口创建 session，再把返回的 token 放到请求头：
 
-You can provide up to three sorting fields which will be applied in the provided order. 
-
-### Paginate
-
-Paginate the result by providing the `page` parameter along with the optional `length` parameter that defaults to 20. 
-
-```
-https://url/to/public/api.php/v1/notes?page=1&length=10
+```http
+Authorization: Bearer {SESSION-TOKEN}
+Accept: application/json
 ```
 
-### Minimize
+### 登录
 
-If you need to get only specific values from each JSON resource provide the `fields` GET parameter with a list of the 
-required property names. 
-
+```http
+POST /v1/sessions
+Content-Type: application/json
 ```
-https://url/to/public/api.php/v1/notes?fields=id,book,hash,notes
-```
-
-### Expected Responses
- 
-Most of the time the API will return the complete requested data in a JSON string but there are some cases that the 
-responses might not contain a message but always a proper HTTP status code. 
-
-## Resources & URIs
-
-### Application 
-
-#### Retrieve 
-
-Returns information about the application and optionally an array of available updates.
-
-**Authorization**
-
-Not required
-
-**Request**
-
-- `GET /v1`
-
-**Payload**
-
-Not required
-
-**Response**
 
 ```json
 {
-    "updates": []
+  "email": "admin@example.org",
+  "password": "12345678"
 }
 ```
 
-#### Install
-
-This will execute the database migrations if they were not executed yet.   
-
-**Authorization**
-
-Required 
-
-**URL**
-
-- `POST /v1`
-
-**Payload**
-
-(Empty)
-
-**Response**
-
-200 OK
-
-#### Update
-
-This will install the latest updates if available.    
-
-**Authorization**
-
-Required 
-
-**URL**
-
-- `PUT /v1`
-
-**Payload**
-
-(Empty)
-
-**Response**
-
-200 OK
-
-
-
-### Sessions
-
-#### Create 
-
-Create a new session for the selected user. 
-
-**Authorization**
-
-Not required 
-
-**URL**
-
-- `POST /v1/sessions`
-
-**Payload**
+成功返回 `201 Created`：
 
 ```json
 {
-    "email": "info@example.org",
-    "password": "12345"
+  "user_id": "0cf76d64-7aea-4060-94f0-553a5d41baea",
+  "expires_at": "2026-11-04 03:08:15",
+  "token": "pZoQKVXYET9KzgnCTzTRafwSrTN9E0RR9DZDK2sWXbudfSz38nyMV5uviSMt"
 }
 ```
 
-**Response**
+失败返回：
 
-201 Created
+- `401`：邮箱或密码错误
+- `422`：参数校验失败
+- `429`：触发登录限流
+
+登录限流按账号和来源地址组合计算：15 分钟内同一账号 + 地址最多 5 次，同一账号最多 50 次，同一地址最多
+50 次。
+
+### 登出
+
+```http
+DELETE /v1/sessions/{token}
+Authorization: Bearer {SESSION-TOKEN}
+```
+
+- `200`：删除成功
+- `404`：token 不存在
+- `401`：token 不属于当前用户
+
+## 通用约定
+
+### 限流
+
+除登录和密码相关接口外，API 默认限制为每个用户（未认证时按 IP）每分钟 200 次请求，响应头包含：
+
+```http
+X-RateLimit-Limit: 200
+X-RateLimit-Remaining: 199
+```
+
+### 列表参数
+
+笔记和用户列表支持以下查询参数：
+
+| 参数 | 说明 |
+| --- | --- |
+| `filter` | 关键词过滤 |
+| `sort` | 排序字段 |
+| `direction` | `asc` 或 `desc` |
+| `page` | 页码，从 1 开始 |
+| `length` | 每页数量 |
+| `fields` | 逗号分隔的返回字段 |
+
+`filter`、`sort`、`fields` 只接受允许的字段，非法值会被忽略或回退到默认值。
+
+### 错误格式
 
 ```json
 {
-    "user_id": "e150a31c-5987-41d7-bd16-b42d87dd3bce",
-    "expires_at": "2020-03-23 04:38:09",
-    "token": "dFt3PPUho4B2hPfmbrjDjkSbtQGLpAFrJptfgKPJBXc2fPSVyWMAuFCOISnS"
+  "message": "Unauthenticated."
 }
 ```
 
-#### Delete 
+常见状态码：
 
-Create a new session for the selected user. 
+| 状态码 | 含义 |
+| --- | --- |
+| `200` | 成功 |
+| `201` | 创建成功 |
+| `401` | 未认证或无权限 |
+| `404` | 资源不存在，或不属于当前用户 |
+| `422` | 参数校验失败 |
+| `429` | 触发限流 |
 
-**Authorization**
+> 访问其他用户的笔记返回 `404` 而不是 `401`，避免客户端误判为登录过期。
 
-Not required 
+## 应用
 
-**URL**
+### 获取应用信息
 
-- `DELETE /v1/sessions/{TOKEN}`
+```http
+GET /v1
+```
 
-**Payload**
+无需登录。管理员携带 Bearer Token 时，响应可能包含可用更新：
 
-Not required
+```json
+{
+  "updates": []
+}
+```
 
-**Response**
+### 安装
 
-200 OK
+```http
+POST /v1
+```
 
+仅在数据库还没有任何表时可用，会执行 `migrate:fresh --seed`。数据库已有表时返回 `401`。该接口只用于首次
+安装，禁止在已有数据的库上调用。
 
-### Notes
+### 更新
 
-#### List
+```http
+PUT /v1
+Authorization: Bearer {ADMIN-TOKEN}
+```
 
-List all user notes. 
+管理员接口。检查并安装可用更新；没有可用更新时返回 `404`。生产环境建议按
+[生产运维](deployment.md) 的流程手工发布。
 
-**Authorization**
+### 刷新
 
-Required 
+```http
+POST /v1/refresh
+Authorization: Bearer {ADMIN-TOKEN}
+```
 
-**URL**
+管理员接口。清理配置缓存、执行迁移并清理无用文件。
 
-- `GET /v1/notes`
+## 笔记
 
-**Payload**
+所有笔记接口都需要登录，普通用户只能访问自己的笔记。
 
-Not required
+### 列表
 
-**Response**
+```http
+GET /v1/notes?filter=keyword&sort=updated_at&direction=desc&page=1&length=20&fields=id,title,pinned
+Authorization: Bearer {TOKEN}
+```
 
-200 OK
+`filter` 会同时匹配标题和内容。开启加密后内容在服务端是密文，过滤会在 PHP 层完成。
+
+响应 `200`：
 
 ```json
 [
   {
-        "id": "644d6d5f-6c42-4c28-b9c1-d25a14cd7903",
-        "user_id": "e150a31c-5987-41d7-bd16-b42d87dd3bce",
-        "content": "Content",
-        "title": "Title",
-        "pinned": false,
-        "created_at": "2020-03-20 09:34:02",
-        "updated_at": "2020-03-20 09:34:08"
-    }
-]
-```
-
-
-#### Retrieve
-
-Retrieve a note resource. 
-
-**Authorization**
-
-Required 
-
-**URL**
-
-- `GET /v1/notes/{ID}`
-
-**Payload**
-
-Not required
-
-**Response**
-
-200 OK
-
-```json
-{
     "id": "644d6d5f-6c42-4c28-b9c1-d25a14cd7903",
     "user_id": "e150a31c-5987-41d7-bd16-b42d87dd3bce",
     "content": "Content",
@@ -262,398 +178,237 @@ Not required
     "pinned": false,
     "created_at": "2020-03-20 09:34:02",
     "updated_at": "2020-03-20 09:34:08"
-}
-```
-
-#### Create
-
-Create a new note for the selected user. 
-
-**Authorization**
-
-Required
-
-**URL**
-
-- `POST /v1/notes`
-
-**Payload**
-
-```json
-{
-    "id": "9ab18f31-ec8f-4022-a972-d66198ede704",
-    "user_id": "e150a31c-5987-41d7-bd16-b42d87dd3bce",
-    "title": "New Note",
-    "content": "This is the new note content.",
-    "pinned": false,
-    "updated_at": "2020-03-22 16:42:25",
-    "created_at": "2020-03-22 16:42:25"
-}
-```
-
-**Response**
-
-201 OK
-
-```json
-{
-    "id": "72e27310-c9d7-4584-b887-846beb8331d7",
-    "user_id": "e150a31c-5987-41d7-bd16-b42d87dd3bce",
-    "title": "New Note",
-    "content": "This is the new note content.",
-    "pinned": false,
-    "updated_at": "2020-03-22 16:44:58",
-    "created_at": "2020-03-22 16:44:58"
-}
-```
-
-#### Update
-
-Update an existing note for the selected user. 
-
-**Authorization**
-
-Required
-
-**URL**
-
-- `POST /v1/notes/{ID}`
-
-**Payload**
-
-```json
-{
-    "title": "Updated Note",
-    "content": "This is the updated note content.",
-    "pinned": false
-}
-```
-
-**Response**
-
-201 OK
-
-```json
-{
-    "id": "72e27310-c9d7-4584-b887-846beb8331d7",
-    "user_id": "e150a31c-5987-41d7-bd16-b42d87dd3bce",
-    "title": "Updated Note",
-    "content": "This is the updated note content.",
-    "pinned": false,
-    "updated_at": "2020-03-22 16:44:58",
-    "created_at": "2020-03-22 16:44:58"
-}
-```
-
-#### Delete
-
-Delete an existing note for the selected user. 
-
-**Authorization**
-
-Required
-
-**URL**
-
-- `DELETE /v1/notes/{ID}`
-
-**Payload**
-
-Not Required
- 
-**Response**
-
-200 OK
-
-
-### Users
-
-#### List
-
-List all user users. 
-
-**Authorization**
-
-Required 
-
-**URL**
-
-- `GET /v1/users`
-
-**Payload**
-
-Not required
-
-**Response**
-
-200 OK
-
-```json
-[
-  {
-      "id": "e150a31c-5987-41d7-bd16-b42d87dd3bce",
-      "name": "John Doe",
-      "email": "admin@example.org",
-      "admin": true,
-      "locale": "en-US",
-      "view": "compact",
-      "line": "full",
-      "sort": "modified",
-      "theme": "light",
-      "encrypt": false,
-      "created_at": "2020-03-12 20:07:08",
-      "updated_at": "2020-03-22 15:51:24"
   }
 ]
 ```
 
+### 获取单条
 
-#### Retrieve
+```http
+GET /v1/notes/{id}
+Authorization: Bearer {TOKEN}
+```
 
-Retrieve a note resource. 
+### 创建
 
-**Authorization**
-
-Required 
-
-**URL**
-
-- `GET /v1/users/{ID}`
-
-**Payload**
-
-Not required
-
-**Response**
-
-200 OK
+```http
+POST /v1/notes
+Authorization: Bearer {TOKEN}
+Content-Type: application/json
+```
 
 ```json
 {
-    "id": "e150a31c-5987-41d7-bd16-b42d87dd3bce",
-    "name": "John Doe",
-    "email": "admin@example.org",
-    "admin": true,
-    "locale": "en-US",
-    "view": "compact",
-    "line": "full",
-    "sort": "modified",
-    "theme": "light",
-    "encrypt": false,
-    "created_at": "2020-03-12 20:07:08",
-    "updated_at": "2020-03-22 15:51:24"
+  "title": "New Note",
+  "content": "This is the new note content.",
+  "pinned": false
 }
 ```
 
-#### Create
+`content` 可以是空字符串或 `null`。成功返回 `201` 和笔记对象。
 
-Create a new note for the selected user. 
+### 更新
 
-**Authorization**
-
-Required
-
-**URL**
-
-- `POST /v1/users`
-
-**Payload**
+```http
+PUT /v1/notes/{id}
+Authorization: Bearer {TOKEN}
+Content-Type: application/json
+```
 
 ```json
 {
-	"name": "John Doe",
-	"email": "user@exmaple.org",
-	"password": "12345",
-	"locale": "en-US",
-	"view": "compact", 
-	"line": "full",
-	"sort": "modified",
-	"theme": "light",
-	"admin": false
+  "title": "Updated Note",
+  "content": "This is the updated note content.",
+  "pinned": true
 }
 ```
 
-**Response**
+成功返回 `200` 和更新后的笔记。
 
-201 OK
+### 删除
+
+```http
+DELETE /v1/notes/{id}
+Authorization: Bearer {TOKEN}
+```
+
+成功返回 `200`。
+
+### 固定/取消固定
+
+```http
+PATCH /v1/notes/{id}/pinned
+Authorization: Bearer {TOKEN}
+Content-Type: application/json
+```
 
 ```json
 {
-    "id": "e150a31c-5987-41d7-bd16-b42d87dd3bce",
-    "name": "John Doe",
-    "email": "admin@example.org",
-    "admin": true,
-    "locale": "en-US",
-    "view": "compact",
-    "line": "full",
-    "sort": "modified",
-    "theme": "light",
-    "encrypt": false,
-    "created_at": "2020-03-12 20:07:08",
-    "updated_at": "2020-03-22 15:51:24"
+  "pinned": true
 }
 ```
 
-#### Update
+成功返回 `200`。
 
-Update an existing note for the selected user. 
+## 用户
 
-**Authorization**
+### 当前用户/指定用户
 
-Required
+```http
+GET /v1/users/{id}
+Authorization: Bearer {TOKEN}
+```
 
-**URL**
+普通用户只能读取自己；管理员可以读取任意用户。无权限返回 `401`。
 
-- `POST /v1/users/{ID}`
+### 更新用户
 
-**Payload**
+```http
+PUT /v1/users/{id}
+Authorization: Bearer {TOKEN}
+Content-Type: application/json
+```
 
 ```json
 {
-	"name": "John Doe",
-	"email": "user@exmaple.org",
-	"password": "12345",
-	"locale": "en-US",
-	"view": "compact", 
-	"line": "full",
-	"sort": "modified",
-	"theme": "light",
-	"admin": false
+  "name": "John Doe",
+  "email": "user@example.org",
+  "password": "new-password",
+  "current_password": "old-password",
+  "locale": "zh-CN",
+  "view": "compact",
+  "line": "full",
+  "sort": "modified",
+  "theme": "light",
+  "encrypt": false,
+  "admin": false
 }
 ```
 
-**Response**
+规则：
 
-200 OK
+- `name`、`email` 必填；`password` 至少 8 位，可为空。
+- 用户修改自己的邮箱或密码时必须提供 `current_password`，否则返回 `422`。
+- 修改密码会撤销该用户除当前 session 外的其他 session。
+- 只有管理员可以修改 `admin` 字段。
+- 不能把最后一个管理员降级，否则返回 `422`。
+- 开关 `encrypt` 会在事务中重新加密/解密该用户全部笔记。
+
+### 用户列表（管理员）
+
+```http
+GET /v1/users?filter=john&sort=name&direction=asc&page=1&length=50
+Authorization: Bearer {ADMIN-TOKEN}
+```
+
+### 创建用户（管理员）
+
+```http
+POST /v1/users
+Authorization: Bearer {ADMIN-TOKEN}
+Content-Type: application/json
+```
 
 ```json
 {
-    "id": "e150a31c-5987-41d7-bd16-b42d87dd3bce",
-    "name": "John Doe",
-    "email": "admin@example.org",
-    "admin": true,
-    "locale": "en-US",
-    "view": "compact",
-    "line": "full",
-    "sort": "modified",
-    "theme": "light",
-    "encrypt": false,
-    "created_at": "2020-03-12 20:07:08",
-    "updated_at": "2020-03-22 15:51:24"
+  "name": "John Doe",
+  "email": "user@example.org",
+  "password": "12345678",
+  "locale": "en-US",
+  "view": "compact",
+  "line": "full",
+  "sort": "modified",
+  "theme": "light",
+  "encrypt": false,
+  "admin": false
 }
 ```
 
-#### Delete
+`password` 至少 8 位，`admin` 必填。成功返回 `201` 和用户对象（不包含密码）。
 
-Delete an existing note for the selected user. 
+### 删除用户（管理员）
 
-**Authorization**
+```http
+DELETE /v1/users/{id}
+Authorization: Bearer {ADMIN-TOKEN}
+```
 
-Required
+不能删除自己；不能删除最后一个管理员。成功返回 `200`。
 
-**URL**
+### 找回密码
 
-- `DELETE /v1/users/{ID}`
-
-**Payload**
-
-Not Required
- 
-**Response**
-
-200 OK
-
-#### Recovery
-
-Recover the password of an existing user (email is sent).  
-
-**Authorization**
-
-Required
-
-**URL**
-
-- `POST /v1/users/recover`
-
-**Payload**
+```http
+POST /v1/users/recovery
+Content-Type: application/json
+```
 
 ```json
 {
   "email": "user@example.org"
 }
 ```
- 
-**Response**
 
-200 OK
+无论邮箱是否存在都返回 `200`，避免账号枚举。邮件在响应后异步发送，重置链接有效期为 60 分钟。该接口限制为
+每 15 分钟 5 次。
 
-### Settings 
+### 重置密码
 
-#### Update 
-
-Update the application settings. 
-
-**Authorization**
-
-Required (only for admins)
-
-**URL**
-
-- `PUT /v1/settings`
-
-**Payload**
+```http
+POST /v1/users/reset-password
+Content-Type: application/json
+```
 
 ```json
 {
-    "default_locale": "de-DE",
-    "mail_driver": "smtp",
-    "mail_host": "smtp.mailtrap.io",
-    "mail_port": "2525",
-    "mail_username": "",
-    "mail_password": "",
-    "mail_encryption": "tls",
-    "mail_from_address": "hello@example.org",
-    "mail_from_name": "Plainpad"
+  "email": "user@example.org",
+  "token": "邮件中的重置 token",
+  "password": "new-password"
 }
 ```
- 
-**Response**
 
-200 OK
+- `password` 至少 8 位。
+- token 无效或过期返回 `422`。
+- 成功返回 `200`，并撤销该用户所有 session。
 
-#### Retrieve 
+## 设置
 
-Retrieve the application settings. 
+### 获取设置
 
-**Authorization**
+```http
+GET /v1/settings
+Authorization: Bearer {ADMIN-TOKEN}
+```
 
-Required (only for admins)
-
-**URL**
-
-- `GET /v1/settings`
-
-**Payload**
-
-Not required
- 
-**Response**
-
-200 OK
+返回键值对象，例如：
 
 ```json
 {
-    "default_locale": "de-DE",
-    "mail_driver": "smtp",
-    "mail_host": "smtp.mailtrap.io",
-    "mail_port": "2525",
-    "mail_username": "",
-    "mail_password": "",
-    "mail_encryption": "tls",
-    "mail_from_address": "hello@example.org",
-    "mail_from_name": "Plainpad"
+  "default_locale": "en-US",
+  "mail_driver": "smtp",
+  "mail_host": "smtp.example.org",
+  "mail_port": "587",
+  "mail_username": "",
+  "mail_password": "",
+  "mail_encryption": "tls",
+  "mail_from_address": "hello@example.org",
+  "mail_from_name": "MostNote"
 }
 ```
 
-[Back](readme.md)
- 
+### 更新设置
+
+```http
+PUT /v1/settings
+Authorization: Bearer {ADMIN-TOKEN}
+Content-Type: application/json
+```
+
+请求体为要更新的键值对象，未提供的键保持不变。成功返回 `200`。
+
+## 相关文档
+
+- [安装部署](installation.md)
+- [生产运维与发布回滚](deployment.md)
+- [项目简介](introduction.md)
+
+[返回文档索引](readme.md)

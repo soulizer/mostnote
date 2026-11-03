@@ -1,5 +1,14 @@
 # Release Notes 
 
+## [Unreleased]
+
+### Documentation
+
+- Rewrite the README and all user/operations docs for the MostNote deployment.
+- Add `docs/deployment.md` with the production release, backup, verification and rollback procedure.
+- Rewrite the API documentation against the current routes, auth and rate limiting behaviour.
+- Merge the repository agent guidance into `agents.md`, including the 12 project rules.
+
 ## [1.2.0] - 2026-10-21
 
 ### Added

@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report something that is broken in Plainpad
+about: Report something that is broken in MostNote
 title: ''
 labels: bug
 assignees: ''
@@ -22,7 +22,7 @@ What you expected to happen instead.
 
 ## Environment
 
-- Plainpad version:
+- MostNote version:
 - Install method: zip / docker / build from source
 - PHP version:
 - Database: MySQL / MariaDB / SQLite (version)

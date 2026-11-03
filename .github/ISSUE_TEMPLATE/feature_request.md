@@ -8,7 +8,7 @@ assignees: ''
 
 ## Problem
 
-What are you trying to do that Plainpad does not support today?
+What are you trying to do that MostNote does not support today?
 
 ## Proposed solution
 

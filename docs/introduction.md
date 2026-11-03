@@ -1,21 +1,31 @@
-## Introduction
+## 项目简介
 
-Plainpad is a self-hosted, open source note taking application that is very easy to set up on your server. Your data 
-will never leave your server, and you will be able to access them from any device connected to the internet.
+MostNote 是基于开源项目 [Plainpad](https://github.com/alextselegidis/plainpad) 的自托管笔记应用。后端使用
+Laravel 12 提供 JSON API，前端是 React 单页应用并以 PWA 方式运行。所有数据保存在自己的服务器和数据库中，
+不依赖第三方笔记服务。
 
-With Plainpad you can allow multiple users to access the application without being able to see each other's notes. The 
-notes are being encrypted and stored safely in the database.
+### 核心特性
 
-Made with simplicity in mind Plainpad feels directly familiar, with the right actions placed in the right positions you 
-will only have to concentrate on the content.
+- **数据自持**：笔记、用户、设置全部保存在自己的 MySQL 数据库中。
+- **多用户隔离**：普通用户只能访问自己的笔记；管理员可管理用户与应用设置。
+- **离线优先**：前端将笔记缓存在浏览器 IndexedDB，断网仍可编辑，恢复网络后同步。
+- **笔记加密**：用户可在设置中开启加密，服务端以加密形式保存笔记内容。
+- **搜索与整理**：标题/内容搜索、按修改时间/创建时间/字母排序、固定笔记、明暗主题。
+- **标准 API**：所有功能通过 `/api.php/v1` 提供，使用 Bearer Token 鉴权。
+- **安全更新**：发布包支持 Ed25519 签名校验，自动更新只接受匹配版本的签名包。
 
-All the contents and notes are being encrypted before being stored so that the maximum security is guaranteed. Only the 
-note owners are able to access the notes in a readable form.
+### 适用场景
 
-The installation is pretty simple and only requires a web server with PHP and MySQL configured. You can start using the 
-app right after filling a simple form.
+- 个人或小团队自建笔记服务。
+- 需要完全掌控数据、可自行备份和迁移的部署环境。
+- 需要离线使用和简单 API 集成的场景。
 
-Being an PWA application, Plainpad will give you access to your notes even when are offline. Changes will be synced once 
-you get back online.
+### 当前部署
 
-[Back](readme.md)
+- 公开地址：<https://mostnote.com/>
+- 当前版本：`1.2.0`
+- 生产运行：CentOS 7 + nginx + PHP-FPM 8.2 + MySQL 8
+
+安装与运维步骤见 [安装部署](installation.md) 和 [生产运维](deployment.md)。
+
+[返回文档索引](readme.md)
