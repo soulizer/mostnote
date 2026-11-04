@@ -4,9 +4,9 @@
 
 - `frontend/ui-design.md` - MostNote 界面风格、颜色、间距与组件规范，修改任何界面时必读。
 
-## 当前任务文档
+## 已完成任务
 
-- `workflow/261104-sbsb-redesign.md` - 参照 sb.sb 的整体界面重构。
+- `workflow/done/261104-sbsb-redesign.md` - 参照 sb.sb 的整体界面重构（已完成并发布）。
 
 ## 全局重要记忆
 
