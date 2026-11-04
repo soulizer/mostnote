@@ -2,7 +2,11 @@ import React, {Component} from 'react';
 import {Link, Redirect} from 'react-router-dom';
 import {
   Button,
+  Card,
+  CardBody,
+  CardGroup,
   Col,
+  Container,
   Form,
   Input,
   InputGroup,
@@ -11,9 +15,6 @@ import {
   Row
 } from 'reactstrap';
 import {inject, observer} from 'mobx-react';
-import {FormattedMessage, injectIntl} from 'react-intl';
-import logo from '../../../assets/img/brand/logo.svg';
-import './Login.scss';
 
 class Login extends Component {
   constructor(props) {
@@ -29,8 +30,7 @@ class Login extends Component {
 
   render() {
     const {
-      account,
-      intl
+      account
     } = this.props;
 
     const {
@@ -46,75 +46,73 @@ class Login extends Component {
     const disabled = loggingIn || !email.trim() || !password;
 
     return (
-      <div className="login-page">
+      <div className="app flex-row align-items-center">
         {user !== null ? <Redirect to="/notes"/> : ''}
 
-        <div className="login-card">
-          <img src={logo} className="login-logo" alt="MostNote"/>
+        <Container>
+          <Row className="justify-content-center">
+            <Col md="8" lg="6">
+              <CardGroup>
+                <Card className="p-4">
+                  <CardBody>
+                    <Form onSubmit={(event) => {
+                      event.preventDefault();
 
-          <h1 className="login-title">MostNote</h1>
-          <p className="login-subtitle">
-            <FormattedMessage id="account.loginSubtitle"/>
-          </p>
+                      if (disabled) {
+                        return;
+                      }
 
-          <Form onSubmit={(event) => {
-            event.preventDefault();
-
-            if (disabled) {
-              return;
-            }
-
-            account.login(this.state.email.trim(), this.state.password);
-          }}>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>
-                  <i className="icon-user"/>
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input type="text" placeholder={intl.formatMessage({id: 'account.email'})}
-                     autoComplete="email" value={email} disabled={loggingIn}
-                     onChange={(event) => this.setState({email: event.target.value})}/>
-            </InputGroup>
-
-            <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>
-                  <i className="icon-lock"/>
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input type="password" placeholder={intl.formatMessage({id: 'account.password'})}
-                     autoComplete="current-password" value={password} disabled={loggingIn}
-                     onChange={(event) => this.setState({password: event.target.value})}/>
-            </InputGroup>
-
-            <Row className="mt-4">
-              <Col xs="12">
-                <Button color="primary" block className="login-button" disabled={disabled}>
-                  {loggingIn
-                    ? <span className="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"/>
-                    : null}
-                  <FormattedMessage id="account.loginButton"/>
-                </Button>
-              </Col>
-            </Row>
-          </Form>
-
-          <div className="login-links">
-            <Link to={'/recover-password'}>
-              <FormattedMessage id="account.forgotPassword"/>
-            </Link>
-          </div>
-
-          <div className="login-brand-footer">
-            <FormattedMessage id="account.loginFooter"/>
-          </div>
-        </div>
+                      account.login(email.trim(), password);
+                    }}>
+                      <h1>Login</h1>
+                      <p className="text-muted">Sign In to your account</p>
+                      <InputGroup className="mb-3">
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <i className="icon-user"/>
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input type="text" placeholder="Email" autoComplete="email" value={email}
+                               disabled={loggingIn}
+                               onChange={(event) => this.setState({email: event.target.value})}/>
+                      </InputGroup>
+                      <InputGroup className="mb-4">
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <i className="icon-lock"/>
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input type="password" placeholder="Password" autoComplete="current-password" value={password}
+                               disabled={loggingIn}
+                               onChange={(event) => this.setState({password: event.target.value})}/>
+                      </InputGroup>
+                      <Row>
+                        <Col xs="6">
+                          <Button color="primary" className="px-4" disabled={disabled}>
+                            {loggingIn
+                              ? <span className="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"/>
+                              : null}
+                            Login
+                          </Button>
+                        </Col>
+                        <Col xs="6" className="text-right">
+                          <Link to={'/recover-password'} className="px-0">
+                            Forgot password?
+                          </Link>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </CardBody>
+                </Card>
+              </CardGroup>
+            </Col>
+          </Row>
+        </Container>
       </div>
     );
   }
 }
 
 export default inject('account')(
-  injectIntl(observer(Login))
+  observer(Login)
 );

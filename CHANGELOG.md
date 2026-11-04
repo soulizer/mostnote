@@ -14,7 +14,7 @@
 
 ### Changed
 
-- Rebrand the login screen, logo, icons and page metadata for MostNote, and modernize the login layout.
+- Rebrand the logo, icons and page metadata for MostNote while keeping the original login layout and visual style.
 
 ### Documentation
 
