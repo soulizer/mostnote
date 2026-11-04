@@ -31,50 +31,35 @@ class About extends Component {
                 About
               </CardHeader>
               <CardBody>
-                <h5>Plainpad</h5>
+                <h5>MostNote</h5>
 
                 <p>
-                  With Plainpad you can allow multiple users to access the application without being able to see each
-                  other's notes. The notes are being encrypted and stored safely in the database.
+                  MostNote is a self-hosted note taking application based on the open source project Plainpad. Your
+                  notes, accounts and settings stay on your own server, with no third-party note service involved.
                 </p>
 
                 <p>
-                  Made with simplicity in mind Plainpad feels directly familiar, with the right actions placed in the
-                  right positions you will only have to concentrate on the content.
+                  Multiple users can use the same installation without seeing each other's notes. Notes are cached
+                  locally for offline editing and synchronized when the connection returns.
                 </p>
 
-                <p>
-                  All the contents and notes are being encrypted before being stored so that the maximum security is
-                  guaranteed. Only the note owners are able to access the notes in a readable form.
-                </p>
+                <h5>Attribution</h5>
 
                 <p>
-                  The installation is pretty simple and only requires a web server with PHP and MySQL configured. You
-                  can start using the app after filling a small form.
-                </p>
-
-                <h5>Stay Tuned</h5>
-
-                <p>
-                  Don't lose any updates and get informed about the latest Plainpad updates.
+                  MostNote is built on <a href="https://plainpad.org" target="_blank" rel="noopener noreferrer">Plainpad</a>,
+                  created by <a href="https://alextselegidis.com" target="_blank" rel="noopener noreferrer">Alex Tselegidis</a>,
+                  and is distributed under the GNU General Public License v3.0.
                 </p>
 
                 <div className="mb-2">
-                  <a href="https://plainpad.org" target="_blank" rel="noopener noreferrer">
+                  <a href="https://mostnote.com" target="_blank" rel="noopener noreferrer">
                     <Button className="btn-yahoo btn-brand d-block mb-4 d-sm-inline-block mb-sm-0 mr-sm-4">
                       <i className="fa fa-globe"/>
                       <span>Website</span>
                     </Button>
                   </a>
 
-                  <a href="https://twitter.com/AlexTselegidis" target="_blank" rel="noopener noreferrer">
-                    <Button className="btn-twitter btn-brand d-block mb-4 d-sm-inline-block mb-sm-0 mr-sm-4">
-                      <i className="fa fa-twitter"/>
-                      <span>Twitter</span>
-                    </Button>
-                  </a>
-
-                  <a href="https://github.com/alextselegidis/plainpad" target="_blank" rel="noopener noreferrer">
+                  <a href="https://github.com/soulizer/mostnote" target="_blank" rel="noopener noreferrer">
                     <Button className="btn-github btn-brand d-block d-sm-inline-block">
                       <i className="fa fa-github"/>
                       <span>GitHub</span>

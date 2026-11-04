@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Return the session expiration as a UTC ISO 8601 timestamp and parse legacy values as UTC, so browsers outside UTC
+  no longer expire a valid session hours early.
+- Show invalid credentials and rate-limit messages on the login form instead of reloading the page or requesting an
+  undefined user.
+- Discard partial or expired local accounts and remove legacy service worker caches that could serve stale pages after
+  an update.
+- Keep the login form submit button in sync with the inputs so signing in works on the first attempt.
+
+### Changed
+
+- Rebrand the login screen, logo, icons and page metadata for MostNote, and modernize the login layout.
+
 ### Documentation
 
 - Rewrite the README and all user/operations docs for the MostNote deployment.

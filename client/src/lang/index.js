@@ -62,9 +62,25 @@ function flatten(object) {
   return result;
 }
 
+function getLocale() {
+  const supported = Object.keys(messages);
+
+  if (account.user && supported.includes(account.user.locale)) {
+    return account.user.locale;
+  }
+
+  const preferred = (typeof navigator !== 'undefined' && navigator.language
+    ? navigator.language
+    : 'en-US').replace('_', '-');
+
+  return supported.find((locale) => locale.toLowerCase() === preferred.toLowerCase())
+    || supported.find((locale) => locale.split('-')[0] === preferred.split('-')[0])
+    || 'en-US';
+}
+
 function translate(id, values = {}) {
   if (!intl) {
-    const locale = account.user ? account.user.locale : 'en-US';
+    const locale = getLocale();
 
     intl = createIntl({
       locale,
@@ -79,6 +95,7 @@ function translate(id, values = {}) {
 }
 
 export {
+  getLocale,
   messages,
   translate
 }

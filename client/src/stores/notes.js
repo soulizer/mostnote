@@ -57,7 +57,7 @@ class NotesStore {
     if (typeof document !== 'undefined' && document && document.title !== undefined) {
       const rawTitle = title || '';
       const display = rawTitle.length > 40 ? rawTitle.substring(0, 40) + '...' : rawTitle;
-      document.title = (display ? display + ' | ' : '') + 'Plainpad';
+      document.title = (display ? display + ' | ' : '') + 'MostNote';
     }
   }
 
@@ -290,7 +290,7 @@ class NotesStore {
 
     // Reset browser title when notes reset
     if (typeof document !== 'undefined' && document && document.title !== undefined) {
-      document.title = 'Plainpad';
+      document.title = 'MostNote';
     }
   }
 

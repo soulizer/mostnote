@@ -33,7 +33,7 @@ class SessionsController extends Controller
 {
     public function create(Request $request)
     {
-        $request->validate( [
+        $request->validate([
             'email' => 'required|email|string',
             'password' => 'required|string',
         ]);
@@ -47,7 +47,7 @@ class SessionsController extends Controller
         // Hash against a dummy value for unknown emails too, so the response time does not reveal which emails exist.
         $hash = $user ? $user->password : '$2y$10$p7YkG7QvHUsbk9KN8DGZ4uMiVgREcOGZ96X7dckVVVNOoQYRtlofW';
 
-        if (!Hash::check($password, $hash) || !$user) {
+        if (! Hash::check($password, $hash) || ! $user) {
             return response()->json(['message' => 'Invalid email or password.'], 401);
         }
 
@@ -55,15 +55,18 @@ class SessionsController extends Controller
         Session::where('user_id', $user->id)->where('expires_at', '<=', now())->delete();
 
         $session = new Session;
-        $session->id = (string)Str::uuid();
-        $session->expires_at = (new \DateTime('+' . config('session.lifetime') . ' minutes'))->format('Y-m-d H:i:s');
+        $session->id = (string) Str::uuid();
+        // Always store and return the expiration as UTC in an unambiguous ISO 8601 form. The previous format
+        // ("Y-m-d H:i:s" without an offset) was parsed as local time by the browser, so the client considered a
+        // session expired hours before the server did.
+        $session->expires_at = now()->addMinutes((int) config('session.lifetime'));
         $session->token = Str::random(60);
         $session->user_id = $user->id;
         $session->save();
 
         return response()->json([
             'user_id' => $session->user_id,
-            'expires_at' => $session->expires_at,
+            'expires_at' => $session->expires_at->toIso8601String(),
             'token' => $session->token,
         ], 201);
     }
@@ -72,7 +75,7 @@ class SessionsController extends Controller
     {
         $session = Session::where('token', $token)->first();
 
-        if (!$session) {
+        if (! $session) {
             return response('', 404);
         }
 

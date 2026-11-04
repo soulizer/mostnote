@@ -21,18 +21,33 @@ import {decorate, observable} from 'mobx';
 import {translate} from '../lang';
 import application from './application';
 import notes from './notes';
+import OfflineError from '../http/OfflineError';
 import SessionsHttpClient from '../http/SessionsHttpClient';
 import UsersHttpClient from '../http/UsersHttpClient';
 import storage from '../storage';
+
+const ACCOUNT_KEY = 'Plainpad.Account';
 
 class AccountStore {
   session = null;
   user = null;
   passwordRecovered = false;
   passwordReset = false;
+  loggingIn = false;
+  expirationTimeout = null;
 
   load(account) {
-    if (!account) {
+    if (!account || !account.session || !account.session.token || !account.user) {
+      // A partially written or pre-1.2 account must not be used; it caused requests for an undefined user and
+      // reload loops on the login screen.
+      this.clear();
+      return;
+    }
+
+    const expires = this.expirationDate(account.session.expires_at);
+
+    if (!expires || expires.getTime() <= Date.now()) {
+      this.clear();
       return;
     }
 
@@ -41,18 +56,37 @@ class AccountStore {
 
     this.observeSessionExpiration();
 
-    if (this.user) {
-      notes.list();
-      notes.sync();
+    notes.list();
+    notes.sync();
+  }
+
+  expirationDate(value) {
+    if (!value) {
+      return null;
     }
+
+    // Older servers returned a UTC timestamp without an offset ("Y-m-d H:i:s"). Browsers parse that as local
+    // time, which made the client expire the session hours too early in some timezones.
+    if (/^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}(\.\d+)?$/.test(value)) {
+      value = value.replace(' ', 'T') + 'Z';
+    }
+
+    const date = new Date(value);
+
+    return isNaN(date.getTime()) ? null : date;
   }
 
   async login(email, password) {
+    if (this.loggingIn) {
+      return;
+    }
+
+    this.loggingIn = true;
+
     try {
       const session = await SessionsHttpClient.create(email, password);
 
       this.session = session;
-      this.observeSessionExpiration();
 
       const user = await UsersHttpClient.retrieve(session.user_id);
 
@@ -63,15 +97,48 @@ class AccountStore {
         user
       };
 
-      localStorage.setItem('Plainpad.Account', JSON.stringify(account));
+      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(account));
+
+      this.observeSessionExpiration();
 
       application.success(translate('account.successfullyLoggedIn'));
 
-      await notes.list();
-      await notes.sync();
+      try {
+        await notes.list();
+        await notes.sync();
+      } catch (error) {
+        // The user is signed in already, a failing sync must not be reported as a failed login.
+        console.error(error);
+      }
     } catch (error) {
-      application.error(translate('account.failedToLogIn'));
+      this.clear();
+      this.loginError(error);
       console.error(error);
+    } finally {
+      this.loggingIn = false;
+    }
+  }
+
+  loginError(error) {
+    if (error instanceof OfflineError) {
+      application.error(translate('account.networkError'));
+      return;
+    }
+
+    switch (error && error.code) {
+      case 401:
+        application.error(translate('account.invalidCredentials'));
+        break;
+      case 422:
+        application.error(translate('account.invalidInput'));
+        break;
+      case 429: {
+        const minutes = error.retryAfter ? Math.ceil(Number(error.retryAfter) / 60) : null;
+        application.error(translate('account.tooManyAttempts', {minutes: minutes || 15}));
+        break;
+      }
+      default:
+        application.error(translate('account.failedToLogIn'));
     }
   }
 
@@ -91,7 +158,16 @@ class AccountStore {
       }
     }
 
-    localStorage.removeItem('Plainpad.Account');
+    this.clear();
+  }
+
+  clear() {
+    if (this.expirationTimeout) {
+      clearTimeout(this.expirationTimeout);
+      this.expirationTimeout = null;
+    }
+
+    localStorage.removeItem(ACCOUNT_KEY);
     notes.reset();
     notes.empty();
     this.user = null;
@@ -144,20 +220,27 @@ class AccountStore {
   }
 
   observeSessionExpiration() {
-    if (!this.session || !navigator.onLine) {
+    if (this.expirationTimeout) {
+      clearTimeout(this.expirationTimeout);
+      this.expirationTimeout = null;
+    }
+
+    if (!this.session) {
       return;
     }
 
-    const expires = new Date(this.session.expires_at);
-    const current = new Date();
+    const expires = this.expirationDate(this.session.expires_at);
 
-    if (current > expires) {
+    if (!expires || expires.getTime() <= Date.now()) {
       application.warning(translate('account.sessionExpired'));
-      this.logout();
+      // The server session is already invalid, revoking it again would only trigger another 401.
+      this.clear();
       return;
     }
 
-    setTimeout(() => this.observeSessionExpiration(), 60000);
+    const remaining = expires.getTime() - Date.now();
+
+    this.expirationTimeout = setTimeout(() => this.observeSessionExpiration(), Math.min(remaining, 60000));
   }
 }
 
@@ -166,6 +249,7 @@ decorate(AccountStore, {
   passwordRecovered: observable,
   passwordReset: observable,
   session: observable,
+  loggingIn: observable,
 });
 
 export default new AccountStore();

@@ -18,7 +18,10 @@
 */
 
 import account from '../stores/account';
+import HttpError from './HttpError';
 import OfflineError from './OfflineError';
+
+let reloading = false;
 
 class HttpClient {
   static baseUrl(segment) {
@@ -49,62 +52,61 @@ class HttpClient {
     return new Request(input, init);
   }
 
-  static request(method, url, data) {
+  static async request(method, url, data, options = {}) {
     if (!navigator.onLine) {
-      return new Promise((resolve, reject) => {
-        reject(new OfflineError('The application is operating in offline mode.'));
-      });
+      throw new OfflineError('The application is operating in offline mode.');
     }
 
-    return new Promise((resolve, reject) => {
-      const request = this.prepare(method, url, data);
+    let response;
 
-      fetch(request)
-        .then((response) => {
-          if (!response.ok) {
-            this.throwRequestFailed(response);
-          }
+    try {
+      response = await fetch(this.prepare(method, url, data));
+    } catch (error) {
+      throw new OfflineError(error.message || 'The request could not be completed.');
+    }
 
-          return response;
-        })
-        .then((response) => {
-          return response.text();
-        })
-        .then((response) => {
-          return response.length ? JSON.parse(response) : {};
-        })
-        .then((json) => {
-          resolve(json);
-        })
-        .catch((error) => {
-          reject(error.message);
-          console.error(error.message);
-        });
-    });
+    if (!response.ok) {
+      throw await this.requestError(response, options);
+    }
+
+    const text = await response.text();
+
+    return text.length ? JSON.parse(text) : {};
   }
 
-  static throwRequestFailed(response) {
-    if (response.status === 401 && account && account.session) {
-      // The session has expired, the user has to log in again.
-      localStorage.removeItem('Plainpad.Account');
-      window.location.reload();
-      return;
+  static async requestError(response, options = {}) {
+    // Only a request made while a user is signed in means the session is gone. A failed login attempt must show
+    // the error on the form instead of clearing the account and reloading the page (the "flash" after login).
+    if (response.status === 401 && !options.ignoreUnauthorized && account.user) {
+      account.clear();
+
+      if (!reloading) {
+        reloading = true;
+        window.location.reload();
+      }
     }
 
-    const error = new Error();
-    error.code = response.status;
+    let message = response.statusText || 'Request failed';
 
-    if (!response.bodyUsed) {
-      error.message = response.statusText;
-      throw error;
-    } else {
-      response
-        .text()
-        .then((message) => {
-          error.message = message;
-          throw error;
-        });
+    try {
+      const text = await response.text();
+
+      if (text) {
+        try {
+          const json = JSON.parse(text);
+          message = json.message || message;
+        } catch (error) {
+          message = text;
+        }
+      }
+    } catch (error) {
+      // Keep the status text when the body cannot be read.
     }
+
+    const retryAfterHeader = response.headers.get('Retry-After');
+    const retryAfter = retryAfterHeader ? (Number(retryAfterHeader) || retryAfterHeader) : null;
+
+    return new HttpError(message, response.status, retryAfter);
   }
 }
 

@@ -62,11 +62,11 @@ class NoteHeader extends Component {
         <AppSidebarToggler className="d-lg-none sidebar-toggler" display="md" mobile/>
         <AppNavbarBrand
           className="d-md-down-none"
-          full={{src: logo, width: 32, height: 32, alt: 'Plainpad Logo'}}
-          minimized={{src: minimizedLogo, width: 30, height: 30, alt: 'Plainpad Logo'}}
+          full={{src: logo, width: 32, height: 32, alt: 'MostNote Logo'}}
+          minimized={{src: minimizedLogo, width: 30, height: 30, alt: 'MostNote Logo'}}
         >
-          <img src={logo} alt="Plainpad Logo" width={32} height={32} className="navbar-brand-logo mr-2"/>
-          <span className="navbar-brand-title">PLAINPAD</span>
+          <img src={logo} alt="MostNote Logo" width={32} height={32} className="navbar-brand-logo mr-2"/>
+          <span className="navbar-brand-title">MOSTNOTE</span>
         </AppNavbarBrand>
         <AppSidebarToggler className="d-md-down-none" display="lg"/>
 

@@ -19,7 +19,7 @@
 
 import React from 'react';
 import vendorLogo from '../../assets/img/brand/alextselegidis-logo.png';
-import appLogo from '../../assets/img/brand/plainpad-logo.png';
+import appLogo from '../../assets/img/brand/logo.svg';
 import {Col, Row} from 'reactstrap';
 
 class NoteCopyright extends React.Component {
@@ -29,9 +29,11 @@ class NoteCopyright extends React.Component {
         <Row className="w-100 mb-2">
           <Col>
             <small>
-              <img src={appLogo} alt="App Logo" className="mr-2 mt-1 float-left d-inline-block"/>
-              <a href="https://plainpad.org" target="_blank" rel="noopener noreferrer">Plainpad</a> {process.env.REACT_APP_VERSION} <br/>
-              Licensed under <a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank" rel="noopener noreferrer">GPL-3.0</a>
+              <img src={appLogo} alt="MostNote Logo" className="mr-2 mt-1 float-left d-inline-block"
+                   width="16" height="16"/>
+              <a href="https://mostnote.com" target="_blank" rel="noopener noreferrer">MostNote</a> {process.env.REACT_APP_VERSION} <br/>
+              Based on <a href="https://plainpad.org" target="_blank" rel="noopener noreferrer">Plainpad</a>, licensed
+              under <a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank" rel="noopener noreferrer">GPL-3.0</a>
             </small>
           </Col>
         </Row>

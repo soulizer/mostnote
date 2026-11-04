@@ -45,6 +45,15 @@ class Session extends Model
     protected $fillable = [
         'expires_at',
         'token',
-        'user_id'
+        'user_id',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'expires_at' => 'datetime',
     ];
 }

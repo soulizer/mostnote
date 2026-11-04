@@ -114,10 +114,20 @@ class ApplicationStore {
   }
 
   async initialize() {
+    this.clearLegacyServiceWorker();
     this.observeNetworkStatus();
     this.suppressSidebarOverlap();
 
-    const localAccount = JSON.parse(localStorage.getItem('Plainpad.Account'));
+    let localAccount = null;
+
+    try {
+      localAccount = JSON.parse(localStorage.getItem('Plainpad.Account'));
+    } catch (error) {
+      // Corrupted local storage must not stop the app from loading the login page.
+      localStorage.removeItem('Plainpad.Account');
+      console.error(error);
+    }
+
     account.load(localAccount);
 
     try {
@@ -156,6 +166,46 @@ class ApplicationStore {
       this.error(translate('application.updateFailure'));
       console.error(error);
     }
+  }
+
+  clearLegacyServiceWorker() {
+    // Releases before 1.2.0 registered a Workbox service worker. After an update it can keep serving the old
+    // index and JavaScript from its cache, which shows up as a broken login and random API errors. The current
+    // app does not use a service worker, so unregister old ones and reload once to escape the stale controller.
+    if (!('serviceWorker' in navigator)) {
+      return;
+    }
+
+    const key = 'MostNote.ServiceWorkerCleared';
+
+    if (localStorage.getItem(key)) {
+      return;
+    }
+
+    navigator.serviceWorker.getRegistrations()
+      .then((registrations) => {
+        if (!registrations.length && !navigator.serviceWorker.controller) {
+          localStorage.setItem(key, '1');
+          return;
+        }
+
+        return Promise.all(registrations.map((registration) => registration.unregister()))
+          .then(() => {
+            if (!window.caches) {
+              return;
+            }
+
+            return window.caches.keys().then((names) => Promise.all(names.map((name) => window.caches.delete(name))));
+          })
+          .then(() => {
+            localStorage.setItem(key, '1');
+
+            if (navigator.serviceWorker.controller) {
+              window.location.reload();
+            }
+          });
+      })
+      .catch((error) => console.error(error));
   }
 
   observeNetworkStatus() {

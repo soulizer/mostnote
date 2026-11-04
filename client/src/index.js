@@ -9,12 +9,12 @@ import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import {Provider} from 'mobx-react';
 import {IntlProvider} from 'react-intl';
-import {messages} from './lang';
+import {getLocale, messages} from './lang';
 import stores from './stores';
 
 stores.application.initialize();
 
-const locale = stores.account.user ? stores.account.user.locale : 'en-US';
+const locale = getLocale();
 
 const Root = () => {
   return (

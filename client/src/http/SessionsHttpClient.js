@@ -30,7 +30,8 @@ class SessionsHttpClient {
       password
     };
 
-    return HttpClient.request(method, url, data);
+    // A rejected login must not be handled like an expired session.
+    return HttpClient.request(method, url, data, {ignoreUnauthorized: true});
   }
 
   static delete(session) {
@@ -38,7 +39,8 @@ class SessionsHttpClient {
 
     const url = `sessions/${session.token}`;
 
-    return HttpClient.request(method, url);
+    // Logging out clears the local session itself, so a stale token must not trigger a reload.
+    return HttpClient.request(method, url, null, {ignoreUnauthorized: true});
   }
 }
 

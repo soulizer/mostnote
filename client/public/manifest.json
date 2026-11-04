@@ -1,10 +1,10 @@
 {
   "dir": "ltr",
   "lang": "en",
-  "name": "Plainpad",
-  "short_name": "Plainpad",
-  "theme_color": "#564b65",
-  "background_color": "#564b65",
+  "name": "MostNote",
+  "short_name": "MostNote",
+  "theme_color": "#4b3f8f",
+  "background_color": "#4b3f8f",
   "display": "standalone",
   "start_url": "./",
   "icons": [
