@@ -1,158 +1,443 @@
-body {
-  .app {
-    &.dark {
-      background-color: $gray-900;
+/*
+  Plainpad - Self Hosted Note Taking App
 
-      .app-header {
-        background-color: $gray-900;
-        border-bottom-color: $dark-gray;
+  Copyright (C) Alex Tselegidis - https://alextselegidis.com
 
-        .theme-toggler {
-          color: $white;
-        }
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-        .navbar-brand-title {
-          color: $white;
-        }
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-        .fa {
-          color: $white;
-        }
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>
+*/
 
-        .navbar-toggler-icon {
-          color: $white;
-        }
+// 深色主题：中性深灰，不使用纯黑，强调色保持黄色。
 
-        .bg-white {
-          background-color: $gray-900 !important;
+$dark-bg: #0f1115;
+$dark-surface: #16181d;
+$dark-raised: #1d2027;
+$dark-border: #262a31;
+$dark-text: #e6e8eb;
+$dark-muted: #9aa1ad;
+$dark-faint: #6b6f7e;
+
+body .app.dark {
+  background-color: $dark-bg;
+  color: $dark-text;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .h1,
+  .h2,
+  .h3,
+  .h4,
+  .h5,
+  .h6,
+  .display-1,
+  .display-2,
+  .display-3,
+  .display-4,
+  .display-5 {
+    color: $dark-text;
+  }
+
+  .app-header {
+    background-color: $dark-surface;
+    border-bottom-color: $dark-border;
+
+    .navbar-brand-title,
+    .theme-toggler,
+    .fa,
+    .navbar-toggler-icon {
+      color: $dark-text;
+    }
+
+    .nav-item .fa:hover,
+    .navbar-toggler:hover {
+      background-color: $dark-raised;
+      color: #fff;
+    }
+
+    .bg-white {
+      background-color: $dark-surface !important;
+    }
+  }
+
+  .app-body {
+    background-color: $dark-bg;
+  }
+
+  .sidebar {
+    background-color: $dark-surface;
+    border-right-color: $dark-border !important;
+
+    .sidebar-header {
+      background-color: $dark-surface;
+    }
+
+    .border-bottom {
+      border-bottom-color: $dark-border !important;
+    }
+
+    > .input-group {
+      background: $dark-raised;
+      border-color: $dark-border;
+
+      .input-group-text {
+        background: transparent;
+        color: $dark-muted;
+      }
+
+      .filter {
+        background: transparent;
+        color: $dark-text;
+
+        &::placeholder {
+          color: $dark-faint;
         }
       }
 
-      .app-body {
-        background-color: $gray-900;
+      kbd {
+        background: $dark-surface;
+        border-color: $dark-border;
+        color: $dark-muted;
+      }
+    }
 
-        .sidebar {
-          background-color: $gray-900;
-          border-right-color: $dark-gray !important;
-          color: $white;
+    .new-note {
+      background: $yellow;
+      color: #1c1c1e;
 
-          .border-bottom {
-            border-bottom-color: $dark-gray !important;
-          }
+      &:hover,
+      &:focus {
+        background: #f5c400;
+        color: #1c1c1e;
+      }
+    }
 
-          .input-group {
-            border-bottom-color: $dark-gray !important;
-          }
+    .sidebar-nav .nav-link {
+      color: $dark-muted;
 
-          .new-note {
-            color: $white;
-          }
+      &:hover {
+        background: $dark-raised;
+        color: $dark-text;
+      }
 
-          .nav-link {
-            color: $white;
+      &.active {
+        background: #2a2410 !important;
+        color: #f5e6a8 !important;
+        box-shadow: inset 3px 0 0 $yellow;
 
-            &.active {
-              color: $white !important;
-              background: #171a1c;
-              border-right: 1px solid $dark-gray;
-
-              .nav-icon {
-                color: #9e8db7;
-              }
-            }
-          }
-
-          .filter-addon-content {
-            background-color: $gray-900 !important;
-          }
-
-          .filter {
-            background-color: $gray-900;
-            color: $white;
-          }
-
-          .clear-filter {
-            border-right-color: $dark-gray;
-          }
-
-          a {
-            color: #9e8db7;
-          }
-        }
-
-        main {
-          .welcome-message {
-            background-color: $gray-900 !important;
-            color: $white !important;
-          }
-
-          .note-content {
-            background-color: $gray-900 !important;
-            color: $white !important;
-          }
-
-          .table {
-            color: $white !important;
-
-            tr:hover {
-              td {
-                color: $white;
-              }
-            }
-          }
-
-          .card {
-            background-color: $gray-900;
-            border-color: $dark-gray;
-            color: $white;
-
-            .card-header {
-              background-color: $gray-900;
-              border-bottom-color: $dark-gray;
-              color: $white;
-            }
-
-            .card-footer {
-              background-color: $gray-900;
-              border-top-color: $dark-gray;
-              color: $white;
-            }
-          }
+        .nav-icon {
+          color: $yellow;
         }
       }
 
-      .aside-menu {
-        background-color: $gray-900;
-        border-left-color: $dark-gray !important;
-        color: $white;
-
-        .border-bottom {
-          border-bottom-color: $dark-gray !important;
-        }
+      .nav-icon {
+        color: $yellow;
       }
+    }
 
-      .dropdown-menu {
-        background-color: $gray-900;
-        border-color: $dark-gray;
+    .sidebar-footer {
+      background: $dark-surface;
+      border-top-color: $dark-border;
+      color: $dark-muted;
 
-        .dropdown-header {
-          background-color: $gray-900;
-          border-bottom-color: $dark-gray;
-          color: $white;
-        }
+      a {
+        color: $dark-muted;
 
-        .dropdown-item {
-          color: $white;
-
-          &:hover {
-            color: $gray-900 !important;
-
-            i {
-              color: $gray-900 !important;
-            }
-          }
+        &:hover {
+          color: $dark-text;
         }
       }
     }
+  }
+
+  .aside-menu {
+    background-color: $dark-surface;
+    border-left-color: $dark-border !important;
+    color: $dark-text;
+
+    .border-bottom {
+      border-bottom-color: $dark-border !important;
+    }
+
+    strong {
+      color: $dark-muted;
+    }
+
+    .btn-light {
+      background: $dark-raised;
+      border-color: $dark-border;
+      color: $dark-text;
+
+      &:hover,
+      &:focus,
+      &:active {
+        background: $dark-border !important;
+        border-color: $dark-border !important;
+        color: #fff !important;
+      }
+    }
+
+    .btn-danger {
+      background: #2a1418;
+      border-color: #4a1f26;
+      color: #ff8f9c;
+
+      &:hover,
+      &:focus,
+      &:active {
+        background: $danger !important;
+        border-color: $danger !important;
+        color: #fff !important;
+      }
+    }
+  }
+
+  .main {
+    background-color: $dark-bg;
+  }
+
+  .welcome-message {
+    background-color: $dark-surface !important;
+    border-color: $dark-border;
+    color: $dark-text !important;
+
+    .lead {
+      color: $dark-muted;
+    }
+  }
+
+  .note-content {
+    background-color: $dark-surface !important;
+    border-color: $dark-border !important;
+    color: $dark-text !important;
+
+    &:focus {
+      border-color: $yellow !important;
+      box-shadow: 0 0 0 3px rgba(255, 208, 47, .14) !important;
+    }
+  }
+
+  .card {
+    background-color: $dark-surface;
+    border-color: $dark-border;
+    color: $dark-text;
+
+    .card-header {
+      background-color: $dark-surface;
+      border-bottom-color: $dark-border;
+      color: $dark-text;
+    }
+
+    .card-body {
+      background-color: $dark-surface;
+      color: $dark-text;
+    }
+
+    .card-footer {
+      background-color: $dark-surface;
+      border-top-color: $dark-border;
+      color: $dark-text;
+    }
+  }
+
+  .form-control,
+  .custom-select {
+    background-color: $dark-raised;
+    border-color: $dark-border;
+    color: $dark-text;
+
+    &:focus {
+      background-color: $dark-raised;
+      border-color: $yellow;
+      color: $dark-text;
+      box-shadow: 0 0 0 3px rgba(255, 208, 47, .14);
+    }
+
+    &::placeholder {
+      color: $dark-faint;
+    }
+  }
+
+  .input-group-text {
+    background-color: $dark-raised;
+    border-color: $dark-border;
+    color: $dark-muted;
+  }
+
+  label {
+    color: $dark-muted;
+  }
+
+  .text-muted {
+    color: $dark-muted !important;
+  }
+
+  .btn-outline-primary {
+    background-color: transparent;
+    border-color: #e6c200;
+    color: #f5e6a8;
+
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: $yellow !important;
+      border-color: $yellow !important;
+      color: #1c1c1e !important;
+    }
+  }
+
+  .btn-brand {
+    background-color: $dark-surface;
+    border-color: $dark-border;
+    color: $dark-text;
+
+    i {
+      background-color: $dark-raised;
+    }
+
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: $dark-raised !important;
+      border-color: $dark-border !important;
+      color: #fff !important;
+    }
+  }
+
+  .table {
+    color: $dark-text;
+
+    thead th {
+      background-color: $dark-raised;
+      border-color: $dark-border;
+      color: $dark-muted;
+    }
+
+    td {
+      border-top-color: $dark-border;
+    }
+
+    tbody tr:hover {
+      background-color: $dark-raised;
+    }
+  }
+
+  .dropdown-menu {
+    background-color: $dark-surface;
+    border-color: $dark-border;
+
+    .dropdown-header {
+      background-color: $dark-surface !important;
+      border-bottom-color: $dark-border;
+      color: $dark-muted;
+    }
+
+    .dropdown-item {
+      color: $dark-text;
+
+      i {
+        color: $dark-muted;
+      }
+
+      &:hover,
+      &:focus {
+        background-color: $dark-raised;
+        color: #fff;
+
+        i {
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  .modal-content {
+    background-color: $dark-surface;
+    color: $dark-text;
+  }
+
+  .modal-header,
+  .modal-footer {
+    border-color: $dark-border;
+  }
+
+  .modal-header .close {
+    color: $dark-text;
+    text-shadow: none;
+  }
+
+  .quick-search {
+    .modal-content {
+      background-color: $dark-surface;
+    }
+
+    .input-group {
+      border-bottom-color: $dark-border;
+    }
+
+    .form-control {
+      background-color: $dark-surface;
+      color: $dark-text;
+    }
+
+    .list-group-item {
+      background-color: $dark-surface;
+      border-top-color: $dark-border;
+      color: $dark-text;
+
+      &:hover {
+        background-color: $dark-raised;
+        color: #fff;
+      }
+
+      &.active {
+        background-color: #2a2410 !important;
+        color: #f5e6a8 !important;
+      }
+    }
+  }
+
+  .custom-context-menu {
+    background: $dark-surface !important;
+    border-color: $dark-border !important;
+  }
+
+  .context-menu-item {
+    color: $dark-text;
+
+    i {
+      color: $dark-muted;
+    }
+
+    &:hover {
+      background-color: $dark-raised !important;
+      color: #fff;
+    }
+
+    &.danger {
+      color: #ff8f9c;
+
+      i {
+        color: #ff8f9c;
+      }
+    }
+  }
+
+  .offline-mode {
+    background: $yellow;
+    color: #1c1c1e;
   }
 }

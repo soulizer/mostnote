@@ -35,6 +35,7 @@ import {
 } from 'reactstrap';
 import {Redirect} from 'react-router-dom';
 import {decorate, observable} from 'mobx';
+import logo from '../../../assets/img/brand/logo.svg';
 
 class RecoverPassword extends Component {
   email = '';
@@ -62,12 +63,16 @@ class RecoverPassword extends Component {
           <Row className="justify-content-center">
             <Col md="8" lg="6">
               <CardGroup>
-                <Card className="p-4">
+                <Card className="auth-card">
                   <CardBody>
                     <Form onSubmit={(event) => {
                       event.preventDefault();
                       account.recoverPassword(email);
                     }}>
+                      <div className="auth-brand">
+                        <img src={logo} alt="MostNote Logo"/>
+                        <span>MostNote</span>
+                      </div>
                       <h1>Recover Password</h1>
                       <p className="text-muted">Recover your account password</p>
                       <InputGroup className="mb-3">

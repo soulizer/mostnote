@@ -3,8 +3,8 @@
   "lang": "en",
   "name": "MostNote",
   "short_name": "MostNote",
-  "theme_color": "#4b3f8f",
-  "background_color": "#4b3f8f",
+  "theme_color": "#f7f8fa",
+  "background_color": "#f7f8fa",
   "display": "standalone",
   "start_url": "./",
   "icons": [

@@ -15,6 +15,7 @@ import {
   Row
 } from 'reactstrap';
 import {inject, observer} from 'mobx-react';
+import logo from '../../../assets/img/brand/logo.svg';
 
 class Login extends Component {
   constructor(props) {
@@ -53,7 +54,7 @@ class Login extends Component {
           <Row className="justify-content-center">
             <Col md="8" lg="6">
               <CardGroup>
-                <Card className="p-4">
+                <Card className="auth-card">
                   <CardBody>
                     <Form onSubmit={(event) => {
                       event.preventDefault();
@@ -64,6 +65,10 @@ class Login extends Component {
 
                       account.login(email.trim(), password);
                     }}>
+                      <div className="auth-brand">
+                        <img src={logo} alt="MostNote Logo"/>
+                        <span>MostNote</span>
+                      </div>
                       <h1>Login</h1>
                       <p className="text-muted">Sign In to your account</p>
                       <InputGroup className="mb-3">

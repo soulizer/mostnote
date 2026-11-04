@@ -17,58 +17,152 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>
 */
 
-$blue: #4da3ff !default;
-$indigo: #7e3cf0 !default;
-$purple:  #564b65 !default;
-$pink: #e673a8 !default;
-$red: #d94e5c !default;
-$orange: #fc9744 !default;
-$yellow: #ffce3b !default;
-$green: #53a663 !default;
-$teal: #bbc7c3 !default;
-$cyan: #17a2b8 !default;
+// MostNote 配色：浅灰页面、白色表面、细描边、黄色强调。
+$blue: #1c7ed6 !default;
+$indigo: #6d28d9 !default;
+$purple: #6d28d9 !default;
+$pink: #d63384 !default;
+$red: #cd071e !default;
+$orange: #f36c21 !default;
+$yellow: #ffd02f !default;
+$green: #047857 !default;
+$teal: #0f766e !default;
+$cyan: #0e7490 !default;
 
-$primary: $purple;
-$secondary: #ced4da;
+$primary: $yellow;
+$secondary: #eef0f3;
+$success: $green;
+$info: $blue;
+$warning: #f59e0b;
+$danger: $red;
+$light: #f7f8fa;
+$dark: #1c1c1e;
 
-$body-bg: #fff;
+$white: #fff;
+$gray-100: #f7f8fa;
+$gray-200: #eef0f3;
+$gray-300: #e0e2e8;
+$gray-400: #c3c7d1;
+$gray-500: #8b909c;
+$gray-600: #6b6f7e;
+$gray-700: #555a6a;
+$gray-800: #33363f;
+$gray-900: #1c1c1e;
 
-$grid-gutter-width: 15px !default;
+$body-bg: #f7f8fa;
+$body-color: #1c1c1e;
 
-$border-radius: 0;
+$font-family-sans-serif: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+  "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif !default;
+$font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
+$font-size-base: .9375rem;
+$line-height-base: 1.6;
+$headings-font-weight: 600;
+$headings-color: $body-color;
 
+$border-color: #e0e2e8;
+$border-radius: 6px;
+$border-radius-lg: 8px;
+$border-radius-sm: 4px;
+
+$link-color: $body-color;
+$link-hover-color: #000;
+$link-hover-decoration: underline;
+
+$grid-gutter-width: 15px;
+
+// 顶栏
+$navbar-height: 56px;
+$navbar-bg: #fff;
 $navbar-brand-width: 205px;
-$navbar-active-color: #fff;
+$navbar-active-color: $body-color;
+$navbar-color: $gray-700;
+$navbar-hover-color: $body-color;
+$navbar-border: (
+  bottom: (
+    size: 1px,
+    style: solid,
+    color: $border-color
+  )
+);
 
+// 左侧笔记栏
 $sidebar-width: 250px;
-$sidebar-bg: rgba(0, 0, 0, 0);
-$sidebar-nav-link-color: #212529;
-$sidebar-nav-link-active-bg: rgba(0, 0, 0, 0);
-$sidebar-nav-link-active-color: $primary;
-$sidebar-footer-bg: none;
 $sidebar-bg: #fff;
-$sidebar-color: #212529;
+$sidebar-color: $body-color;
+$sidebar-header-bg: #fff;
+$sidebar-form-bg: #f7f8fa;
+$sidebar-form-color: $body-color;
+$sidebar-form-placeholder-color: $gray-600;
+$sidebar-nav-color: $body-color;
+$sidebar-nav-link-color: $gray-700;
+$sidebar-nav-link-hover-color: $body-color;
+$sidebar-nav-link-hover-bg: #f7f8fa;
+$sidebar-nav-link-hover-icon-color: $body-color;
+$sidebar-nav-link-active-bg: #fff4c4;
+$sidebar-nav-link-active-color: $body-color;
+$sidebar-nav-link-active-icon-color: $gray-700;
+$sidebar-nav-link-disabled-color: $gray-500;
+$sidebar-nav-link-padding-x: .75rem;
+$sidebar-nav-link-padding-y: .5rem;
+$sidebar-footer-bg: #fff;
+$sidebar-minimizer-bg: #fff;
+$sidebar-minimizer-hover-bg: #f7f8fa;
+$sidebar-minimizer-indicator-color: $gray-600;
 
-$card-border-radius: 0;
+// 右侧详情栏
+$aside-menu-width: 260px;
+$aside-menu-color: $body-color;
+$aside-menu-bg: #fff;
+$aside-menu-borders: (
+  left: (
+    size: 1px,
+    style: solid,
+    color: $border-color
+  )
+);
+
+// 卡片与表单
+$card-border-color: $border-color;
+$card-border-radius: 10px;
 $card-cap-bg: #fff;
+$card-cap-border-color: #eef0f3;
+$card-bg: #fff;
+$card-inner-border-radius: 9px;
 
-$input-color: #212529;
-$input-border-color: #c8ced3;
+$input-color: $body-color;
+$input-bg: #fff;
+$input-border-color: $border-color;
+$input-focus-border-color: #c3a21a;
+$input-focus-box-shadow: none;
+$input-border-radius: 6px;
+$input-border-radius-lg: 6px;
+$input-border-radius-sm: 4px;
+$input-placeholder-color: $gray-500;
+$input-height: 40px;
 
-$input-border-radius: 0;
-$input-border-radius-lg: 0;
-$input-border-radius-sm: 0;
+$custom-select-border-radius: 6px;
 
-$btn-border-radius: 0;
-$btn-border-radius-lg: 0;
-$btn-border-radius-sm: 0;
+$btn-border-radius: 6px;
+$btn-border-radius-lg: 8px;
+$btn-border-radius-sm: 4px;
+$btn-font-weight: 600;
 
-$dropdown-border-radius: 0;
+$dropdown-border-radius: 8px;
+$dropdown-border-color: $border-color;
+$dropdown-link-hover-bg: #f7f8fa;
+$dropdown-link-active-bg: #fff4c4;
+$dropdown-link-active-color: $body-color;
+$dropdown-box-shadow: 0 10px 28px rgba(15, 23, 42, .14);
 
-$modal-content-border-radius: 0;
+$modal-content-border-radius: 10px;
+$modal-content-border-color: $border-color;
 
-$custom-select-border-radius: 0;
+$table-head-color: $gray-600;
+$table-head-bg: #fafbfc;
+$table-border-color: #eef0f3;
+$table-hover-bg: #fafbfc;
 
-$sidebar-nav-link-padding-x: .5rem;
-
-$dark-gray: #40484f;
+$text-muted: $gray-600;
+$dark-gray: #262a31;
+$sidebar-nav-title-color: $gray-600;

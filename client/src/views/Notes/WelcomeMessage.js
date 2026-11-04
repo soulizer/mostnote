@@ -21,6 +21,7 @@ import React, {Component} from 'react';
 import {inject, observer} from 'mobx-react';
 import {Button, Jumbotron} from 'reactstrap';
 import {FormattedMessage} from 'react-intl';
+import logo from '../../assets/img/brand/logo.svg';
 
 class WelcomeMessage extends Component {
   render() {
@@ -30,7 +31,9 @@ class WelcomeMessage extends Component {
 
     return (
       <div className="animated fadeIn h-100 py-5">
-        <Jumbotron className="bg-white rounded-0 text-center welcome-message my-5">
+        <Jumbotron className="bg-white text-center welcome-message my-5">
+          <img src={logo} alt="MostNote Logo" className="welcome-logo"/>
+
           <h1 className="display-5">
             <FormattedMessage id="notes.welcome"/>
           </h1>

@@ -61,7 +61,6 @@ class NoteHeader extends Component {
       <React.Fragment>
         <AppSidebarToggler className="d-lg-none sidebar-toggler" display="md" mobile/>
         <AppNavbarBrand
-          className="d-md-down-none"
           full={{src: logo, width: 32, height: 32, alt: 'MostNote Logo'}}
           minimized={{src: minimizedLogo, width: 30, height: 30, alt: 'MostNote Logo'}}
         >

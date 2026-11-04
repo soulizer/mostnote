@@ -35,6 +35,7 @@ import {
 } from 'reactstrap';
 import {Redirect} from 'react-router-dom';
 import {decorate, observable} from 'mobx';
+import logo from '../../../assets/img/brand/logo.svg';
 
 class ResetPassword extends Component {
   password = '';
@@ -62,12 +63,16 @@ class ResetPassword extends Component {
           <Row className="justify-content-center">
             <Col md="8" lg="6">
               <CardGroup>
-                <Card className="p-4">
+                <Card className="auth-card">
                   <CardBody>
                     <Form onSubmit={(event) => {
                       event.preventDefault();
                       account.resetPassword(email, token, this.password, this.confirm);
                     }}>
+                      <div className="auth-brand">
+                        <img src={logo} alt="MostNote Logo"/>
+                        <span>MostNote</span>
+                      </div>
                       <h1>Reset Password</h1>
                       <p className="text-muted">Enter your new password</p>
                       <InputGroup className="mb-3">

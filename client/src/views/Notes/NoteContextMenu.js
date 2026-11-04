@@ -120,54 +120,19 @@ class NoteContextMenu extends Component {
           position: 'fixed',
           top: `${y}px`,
           left: `${x}px`,
-          backgroundColor: 'white',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
-          zIndex: 10000,
-          minWidth: '180px'
+          zIndex: 10000
         }}
       >
-        <div
-          className="context-menu-item"
-          onClick={this.handleCopy}
-          style={{
-            padding: '8px 16px',
-            cursor: 'pointer',
-            borderBottom: '1px solid #eee'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
-        >
-          <i className="fa fa-copy mr-2"></i>
+        <div className="context-menu-item" onClick={this.handleCopy}>
+          <i className="fa fa-copy"/>
           Copy
         </div>
-        <div
-          className="context-menu-item"
-          onClick={this.handleCut}
-          style={{
-            padding: '8px 16px',
-            cursor: 'pointer',
-            borderBottom: '1px solid #eee'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
-        >
-          <i className="fa fa-cut mr-2"></i>
+        <div className="context-menu-item" onClick={this.handleCut}>
+          <i className="fa fa-cut"/>
           Cut
         </div>
-        <div
-          className="context-menu-item"
-          onClick={this.handlePaste}
-          style={{
-            padding: '8px 16px',
-            cursor: 'pointer',
-            borderBottom: '1px solid #eee'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
-        >
-          <i className="fa fa-paste mr-2"></i>
+        <div className="context-menu-item" onClick={this.handlePaste}>
+          <i className="fa fa-paste"/>
           Paste
         </div>
         <div
@@ -176,15 +141,8 @@ class NoteContextMenu extends Component {
             notes.download();
             onClose();
           }}
-          style={{
-            padding: '8px 16px',
-            cursor: 'pointer',
-            borderBottom: '1px solid #eee'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
         >
-          <i className="fa fa-cloud-download mr-2"></i>
+          <i className="fa fa-cloud-download"/>
           Download
         </div>
         {navigator.canShare && (
@@ -194,15 +152,8 @@ class NoteContextMenu extends Component {
               notes.share();
               onClose();
             }}
-            style={{
-              padding: '8px 16px',
-              cursor: 'pointer',
-              borderBottom: '1px solid #eee'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
           >
-            <i className="fa fa-share-alt mr-2"></i>
+            <i className="fa fa-share-alt"/>
             Share
           </div>
         )}
@@ -216,47 +167,26 @@ class NoteContextMenu extends Component {
             }
             onClose();
           }}
-          style={{
-            padding: '8px 16px',
-            cursor: 'pointer',
-            borderBottom: '1px solid #eee'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
         >
-          <i className="fa fa-thumb-tack mr-2"></i>
+          <i className="fa fa-thumb-tack"/>
           {pinned ? 'Unpin' : 'Pin'}
         </div>
         <div
-          className="context-menu-item"
+          className="context-menu-item danger"
           onClick={() => {
             notes.delete();
             onClose();
           }}
-          style={{
-            padding: '8px 16px',
-            cursor: 'pointer',
-            borderBottom: '1px solid #eee',
-            color: '#d94e5c'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
         >
-          <i className="fa fa-trash mr-2"></i>
+          <i className="fa fa-trash"/>
           Delete
         </div>
         <div
           className="context-menu-item"
           onClick={this.handleShowOriginalMenu}
-          style={{
-            padding: '8px 16px',
-            cursor: 'pointer'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
           title="Right-click again to see the browser menu"
         >
-          <i className="fa fa-ellipsis-h mr-2"></i>
+          <i className="fa fa-ellipsis-h"/>
           Show Browser Menu
         </div>
       </div>
