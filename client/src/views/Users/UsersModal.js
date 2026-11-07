@@ -18,6 +18,7 @@
 */
 
 import React, {Component} from 'react';
+import Icon from '../../components/Icon';
 import {Button, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader,} from 'reactstrap';
 import {inject, observer} from 'mobx-react';
 import {FormattedMessage} from 'react-intl';
@@ -112,12 +113,12 @@ class UsersModal extends Component {
           </ModalBody>
           <ModalFooter>
             <Button color="light" className="mr-2" onClick={() => this.toggle()}>
-              <i className="fa fa-ban mr-2" />
+              <Icon name="ban" className="mr-2" />
               <FormattedMessage id="users.cancel"/>
             </Button>
 
             <Button type="submit" color="primary">
-              <i className="fa fa-save mr-2" />
+              <Icon name="save" className="mr-2" />
               <FormattedMessage id="users.save"/>
             </Button>
           </ModalFooter>

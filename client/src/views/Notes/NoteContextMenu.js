@@ -18,6 +18,7 @@
 */
 
 import React, {Component} from 'react';
+import Icon from '../../components/Icon';
 
 class NoteContextMenu extends Component {
   constructor(props) {
@@ -124,15 +125,15 @@ class NoteContextMenu extends Component {
         }}
       >
         <div className="context-menu-item" onClick={this.handleCopy}>
-          <i className="fa fa-copy"/>
+          <Icon name="copy"/>
           Copy
         </div>
         <div className="context-menu-item" onClick={this.handleCut}>
-          <i className="fa fa-cut"/>
+          <Icon name="cut"/>
           Cut
         </div>
         <div className="context-menu-item" onClick={this.handlePaste}>
-          <i className="fa fa-paste"/>
+          <Icon name="paste"/>
           Paste
         </div>
         <div
@@ -142,7 +143,7 @@ class NoteContextMenu extends Component {
             onClose();
           }}
         >
-          <i className="fa fa-cloud-download"/>
+          <Icon name="download"/>
           Download
         </div>
         {navigator.canShare && (
@@ -153,7 +154,7 @@ class NoteContextMenu extends Component {
               onClose();
             }}
           >
-            <i className="fa fa-share-alt"/>
+            <Icon name="share"/>
             Share
           </div>
         )}
@@ -168,7 +169,7 @@ class NoteContextMenu extends Component {
             onClose();
           }}
         >
-          <i className="fa fa-thumb-tack"/>
+          <Icon name="pin"/>
           {pinned ? 'Unpin' : 'Pin'}
         </div>
         <div
@@ -178,7 +179,7 @@ class NoteContextMenu extends Component {
             onClose();
           }}
         >
-          <i className="fa fa-trash"/>
+          <Icon name="trash"/>
           Delete
         </div>
         <div
@@ -186,7 +187,7 @@ class NoteContextMenu extends Component {
           onClick={this.handleShowOriginalMenu}
           title="Right-click again to see the browser menu"
         >
-          <i className="fa fa-ellipsis-h"/>
+          <Icon name="more"/>
           Show Browser Menu
         </div>
       </div>

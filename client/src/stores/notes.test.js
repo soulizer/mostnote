@@ -18,6 +18,7 @@
 */
 
 import notes from './notes';
+import {normalizeNote, titleFromContent} from '../utils/note';
 
 const list = [
   {title: 'Shopping list', content: 'milk (2) [organic]', tags: ['home']},
@@ -53,4 +54,24 @@ it('accepts regular expression characters in the filter', () => {
 it('derives the title from the first content line', () => {
   expect(notes.getTitleByContent('First line\nsecond')).toBe('First line');
   expect(notes.getTitleByContent('   ')).toBe('NO-TITLE');
+});
+
+it('normalizes legacy notes with an empty title before they are uploaded', () => {
+  const note = normalizeNote({
+    id: 'legacy',
+    title: '',
+    content: '',
+    pinned: '',
+    tags: null
+  });
+
+  expect(note.title).toBe('NO-TITLE');
+  expect(note.content).toBe('');
+  expect(note.pinned).toBe(false);
+  expect(note.tags).toEqual([]);
+});
+
+it('derives a legacy title from content and cleans tags', () => {
+  expect(titleFromContent('  First line  \nsecond')).toBe('First line');
+  expect(normalizeNote({content: 'Body', title: ' ', tags: [' work ', '', 'work']}).tags).toEqual(['work']);
 });

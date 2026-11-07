@@ -22,6 +22,7 @@ import PropTypes from 'prop-types';
 import {AppNavbarBrand, AppSidebarToggler} from '@coreui/react';
 import {inject, observer} from 'mobx-react';
 import logo from '../../assets/img/brand/logo.svg';
+import Icon from '../../components/Icon';
 
 const propTypes = {
   children: PropTypes.node,
@@ -48,7 +49,7 @@ class NoteHeader extends Component {
     return (
       <React.Fragment>
         <AppSidebarToggler className="sidebar-toggler header-action d-lg-none" display="md" mobile>
-          <i className="fa fa-bars"/>
+          <Icon name="menu"/>
         </AppSidebarToggler>
 
         <AppNavbarBrand>
@@ -63,7 +64,7 @@ class NoteHeader extends Component {
             onClick={() => notes.sync()}
             aria-label="Sync notes"
           >
-            <i className="fa fa-refresh"/>
+            <Icon name="refresh" spin={syncing}/>
           </button>
 
           <button
@@ -72,7 +73,7 @@ class NoteHeader extends Component {
             onClick={() => profile.toggleTheme()}
             aria-label="Toggle theme"
           >
-            <i className={`fa ${user.theme === 'light' ? 'fa-moon-o' : 'fa-sun-o'}`}/>
+            <Icon name={user.theme === 'light' ? 'moon' : 'sun'}/>
           </button>
         </div>
       </React.Fragment>

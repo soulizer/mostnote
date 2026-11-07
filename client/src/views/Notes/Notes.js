@@ -23,6 +23,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import moment from 'moment';
 import WelcomeMessage from './WelcomeMessage';
 import NoteContextMenu from './NoteContextMenu';
+import Icon from '../../components/Icon';
 import {translate} from '../../lang';
 
 class Notes extends Component {
@@ -224,7 +225,7 @@ class Notes extends Component {
       <div className="editor-shell">
         <div className="editor-toolbar">
           <div className={`editor-save-state ${saving ? 'saving' : ''}`}>
-            <i className={`fa ${saving ? 'fa-spinner fa-spin' : 'fa-check'}`}/>
+            <Icon name={saving ? 'loader' : 'check'} spin={saving}/>
             <span>{saving ? translate('notes.saving') : translate('notes.saved')}</span>
           </div>
 
@@ -235,7 +236,7 @@ class Notes extends Component {
               onClick={() => pinned ? notes.unpin() : notes.pin()}
               title={translate(pinned ? 'notes.unpin' : 'notes.pin')}
             >
-              <i className="fa fa-thumb-tack"/>
+              <Icon name="pin"/>
             </button>
 
             <button
@@ -244,7 +245,7 @@ class Notes extends Component {
               onClick={() => notes.download()}
               title={translate('notes.download')}
             >
-              <i className="fa fa-download"/>
+              <Icon name="download"/>
             </button>
 
             {typeof navigator !== 'undefined' && navigator.canShare ? (
@@ -254,7 +255,7 @@ class Notes extends Component {
                 onClick={() => notes.share()}
                 title={translate('notes.share')}
               >
-                <i className="fa fa-share-alt"/>
+                <Icon name="share"/>
               </button>
             ) : null}
 
@@ -264,7 +265,7 @@ class Notes extends Component {
               onClick={() => notes.delete()}
               title={translate('notes.delete')}
             >
-              <i className="fa fa-trash"/>
+              <Icon name="trash"/>
             </button>
           </div>
         </div>
@@ -280,13 +281,13 @@ class Notes extends Component {
             />
 
             <div className="note-tags">
-              <i className="fa fa-tags note-tags-icon"/>
+              <Icon name="tag" size={12} className="note-tags-icon"/>
 
               {tags.map((tag) => (
                 <span className="note-tag" key={tag}>
                   {tag}
                   <button type="button" onClick={() => notes.removeTag(tag)} aria-label={translate('notes.delete')}>
-                    <i className="fa fa-times"/>
+                    <Icon name="x" size={12}/>
                   </button>
                 </span>
               ))}

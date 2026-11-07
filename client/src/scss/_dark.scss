@@ -56,7 +56,7 @@ body .app.dark {
     border-bottom-color: $dark-border;
 
     .navbar-brand-title,
-    .fa,
+    .app-icon,
     .navbar-toggler-icon {
       color: $dark-text;
     }
@@ -87,7 +87,7 @@ body .app.dark {
     background: $dark-raised;
     border-color: $dark-border;
 
-    > .fa {
+    > .sidebar-search-icon {
       color: $dark-muted;
     }
 
@@ -345,7 +345,7 @@ body .app.dark {
     border-color: $dark-border;
     color: $dark-text;
 
-    i {
+    .app-icon {
       background-color: transparent;
     }
 
@@ -389,7 +389,7 @@ body .app.dark {
     .dropdown-item {
       color: $dark-text;
 
-      i {
+      .app-icon {
         color: $dark-muted;
       }
 
@@ -398,7 +398,7 @@ body .app.dark {
         background-color: $dark-raised;
         color: #fff;
 
-        i {
+        .app-icon {
           color: #fff;
         }
       }
@@ -408,7 +408,7 @@ body .app.dark {
   .sidebar-user-logout {
     color: #ff8f9c !important;
 
-    i {
+    .app-icon {
       color: #ff8f9c !important;
     }
   }
@@ -468,7 +468,7 @@ body .app.dark {
   .context-menu-item {
     color: $dark-text;
 
-    i {
+    .app-icon {
       color: $dark-muted;
     }
 
@@ -480,7 +480,7 @@ body .app.dark {
     &.danger {
       color: #ff8f9c;
 
-      i {
+      .app-icon {
         color: #ff8f9c;
       }
     }

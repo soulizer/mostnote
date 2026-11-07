@@ -18,6 +18,7 @@
 */
 
 import React, {Component} from 'react';
+import Icon from '../../components/Icon';
 import {Button, Card, CardBody, CardFooter, CardHeader, Col, Form, FormGroup, Input, Label, Row} from 'reactstrap';
 import {FormattedMessage} from 'react-intl';
 import {inject, observer} from 'mobx-react';
@@ -94,7 +95,7 @@ class Settings extends Component {
                 </CardBody>
                 <CardFooter>
                   <Button type="submit" color="primary" className="float-right">
-                    <i className="fa fa-save mr-2"/>
+                    <Icon name="save" className="mr-2"/>
                     <FormattedMessage id="settings.save"/>
                   </Button>
                 </CardFooter>
@@ -120,7 +121,7 @@ class Settings extends Component {
                 <CardFooter>
                   <Button type="button" color="primary" className="float-right"
                           onClick={() => application.update()}>
-                    <i className="fa fa-arrow-circle-up mr-2"/>
+                    <Icon name="upload" className="mr-2"/>
                     <FormattedMessage id="settings.update"/>
                   </Button>
                 </CardFooter>
@@ -199,7 +200,7 @@ class Settings extends Component {
                 </CardBody>
                 <CardFooter>
                   <Button type="submit" color="primary" className="float-right">
-                    <i className="fa fa-save mr-2"/>
+                    <Icon name="save" className="mr-2"/>
                     <FormattedMessage id="settings.save"/>
                   </Button>
                 </CardFooter>

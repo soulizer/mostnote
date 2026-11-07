@@ -137,31 +137,17 @@ body {
     }
   }
 
-  .header-action .fa,
-  .navbar-toggler .fa {
-    font-size: .9375rem;
+  .header-action .app-icon,
+  .navbar-toggler .app-icon {
+    color: inherit;
   }
 
-  .header-action.syncing .fa {
-    animation: spin 2s infinite linear;
-  }
-
-  .sidebar-toggler .navbar-toggler-icon,
-  .aside-toggler .navbar-toggler-icon {
+  .sidebar-toggler .navbar-toggler-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background-image: none !important;
-    font-family: FontAwesome;
-    font-size: .9375rem;
-    font-style: normal;
-    line-height: 1;
     color: $gray-700;
-  }
-
-  .sidebar-toggler .navbar-toggler-icon:before {
-    content: "\f0c9";
-  }
-
-  .aside-toggler .navbar-toggler-icon:before {
-    content: "\f15c";
   }
 }
 
@@ -194,11 +180,10 @@ body {
   border: 1px solid $border-color;
   background: #fff;
 
-  > .fa {
+  > .sidebar-search-icon {
     position: absolute;
     left: 10px;
     color: $gray-600;
-    font-size: 12px;
     pointer-events: none;
   }
 
@@ -260,9 +245,8 @@ body {
   letter-spacing: .02em;
   box-shadow: none !important;
 
-  .fa {
+  .app-icon {
     margin-right: 6px;
-    font-size: 12px;
   }
 
   &:hover,
@@ -353,7 +337,6 @@ body {
   flex: 0 0 auto;
   margin-top: 3px;
   color: #a16207;
-  font-size: 10px;
 }
 
 .note-list-tags {
@@ -454,15 +437,61 @@ body {
 }
 
 .sidebar-user-dropdown .dropdown-menu {
-  width: 100%;
-  margin-bottom: 4px;
+  left: -8px !important;
+  right: auto;
+  width: calc(100% + 16px);
+  min-width: 0;
+  margin-bottom: 6px;
+  padding: 6px;
+  border: 1px solid $border-color;
+  border-radius: 0;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, .14);
+}
+
+.sidebar-user-dropdown .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 34px;
+  padding: 7px 10px;
+  border-radius: 0;
+  color: $gray-700;
+  font-size: .8125rem;
+  white-space: nowrap;
+
+  .app-icon {
+    margin-right: 0;
+    color: $gray-500;
+  }
+
+  &:hover,
+  &:focus {
+    background: #f7f8fa;
+    color: $body-color;
+  }
 }
 
 .sidebar-user-logout {
   color: $danger !important;
 
-  i {
+  .app-icon {
     color: $danger !important;
+  }
+}
+
+.app-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  vertical-align: middle;
+}
+
+.app-icon-spin {
+  animation: app-icon-spin 1s linear infinite;
+}
+
+@keyframes app-icon-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -521,11 +550,11 @@ body {
   color: $gray-600;
   font-size: .6875rem;
 
-  .fa {
+  .app-icon {
     color: $green;
   }
 
-  &.saving .fa {
+  &.saving .app-icon {
     color: #b45309;
   }
 }
@@ -615,7 +644,6 @@ body {
 .note-tags-icon {
   margin-right: 2px;
   color: $gray-500;
-  font-size: 11px;
 }
 
 .note-tag {
@@ -960,14 +988,11 @@ label,
   border: 1px solid $border-color;
   color: $body-color;
 
-  i {
-    width: auto;
+  .app-icon {
     margin: 0 6px 0 0;
-    background: transparent;
-    line-height: inherit;
   }
 
-  i + span {
+  .app-icon + span {
     margin-left: 0;
   }
 
@@ -1008,11 +1033,9 @@ button:focus:not(:focus-visible) {
     color: $gray-700;
     font-size: .8125rem;
 
-    i {
-      width: 16px;
+    .app-icon {
       margin-right: 8px;
       color: $gray-600;
-      text-align: center;
     }
 
     &:hover,
@@ -1020,7 +1043,7 @@ button:focus:not(:focus-visible) {
       background-color: #f7f8fa;
       color: $body-color;
 
-      i {
+      .app-icon {
         color: $body-color;
       }
     }
@@ -1150,11 +1173,10 @@ button:focus:not(:focus-visible) {
   font-size: .8125rem;
   cursor: pointer;
 
-  i {
-    width: 16px;
+  .app-icon {
+    flex: 0 0 auto;
     margin-right: 8px;
     color: $gray-600;
-    text-align: center;
   }
 
   &:hover {
@@ -1165,7 +1187,7 @@ button:focus:not(:focus-visible) {
   &.danger {
     color: $danger;
 
-    i {
+    .app-icon {
       color: $danger;
     }
   }
@@ -1331,7 +1353,7 @@ button:focus:not(:focus-visible) {
 .updates-available > * {
   color: #b45309 !important;
 
-  .fa {
+  .app-icon {
     color: #b45309 !important;
   }
 }

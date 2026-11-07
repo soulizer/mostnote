@@ -18,6 +18,7 @@
 */
 
 import React, {Component} from 'react';
+import Icon from '../../components/Icon';
 import {Button, Card, CardBody, CardHeader, Col, Input, Row, Table} from 'reactstrap';
 import {inject, observer} from 'mobx-react';
 import {FormattedMessage} from 'react-intl';
@@ -70,12 +71,12 @@ class Users extends Component {
 
         <td>
           <Button size="sm" color="light" className="d-xs-block d-sm-inline-block mb-2 mr-0 mr-sm-2 mb-sm-0" onClick={() => users.edit(user)}>
-            <i className="fa fa-pencil mr-2"/>
+            <Icon name="edit" className="mr-2"/>
             <FormattedMessage id="users.edit"/>
           </Button>
 
           <Button size="sm" color="light" className="d-xs-block d-sm-inline-block" onClick={() => users.delete(user)}>
-            <i className="fa fa-trash mr-2"/>
+            <Icon name="trash" className="mr-2"/>
             <FormattedMessage id="users.delete"/>
           </Button>
         </td>
@@ -98,7 +99,7 @@ class Users extends Component {
                   }}/>
 
                   <Button className="float-right" color="success" onClick={() => users.add()}>
-                    <i className="fa fa-plus mr-2"/>
+                    <Icon name="plus" className="mr-2"/>
                     <FormattedMessage id="users.add"/>
                   </Button>
                 </div>

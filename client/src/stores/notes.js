@@ -27,6 +27,7 @@ import Swal from 'sweetalert2'
 import moment from 'moment';
 import storage from '../storage';
 import OfflineError from '../http/OfflineError';
+import {normalizeNote, notesDiffer} from '../utils/note';
 
 class NotesStore {
   syncing = false;
@@ -65,10 +66,20 @@ class NotesStore {
 
   async list() {
     const localNotes = [];
+    const staleNotes = [];
 
     await storage.table('notes').iterate((value) => {
-      localNotes.push(value);
+      const note = normalizeNote(value);
+      localNotes.push(note);
+
+      if (notesDiffer(value, note)) {
+        staleNotes.push(note);
+      }
     });
+
+    for (const note of staleNotes) {
+      await storage.table('notes').setItem(note.id, note);
+    }
 
     const filteredNotes = this.filterNotes(localNotes);
 
@@ -100,11 +111,17 @@ class NotesStore {
       return;
     }
 
-    const localNote = await storage.table('notes').getItem(id);
+    const storedNote = await storage.table('notes').getItem(id);
 
-    if (!localNote) {
+    if (!storedNote) {
       application.warning(translate('notes.notFoundOrNotSynced'));
       return;
+    }
+
+    const localNote = normalizeNote(storedNote);
+
+    if (notesDiffer(storedNote, localNote)) {
+      await storage.table('notes').setItem(localNote.id, localNote);
     }
 
     window.location.href = `#/notes/${id}`;
@@ -151,7 +168,7 @@ class NotesStore {
 
       const isLocalNote = id.includes('local');
 
-      const note = {
+      const note = normalizeNote({
         id,
         user_id: account.user.id,
         created_at: this.createdAt || moment.utc().format(),
@@ -160,7 +177,7 @@ class NotesStore {
         content: this.content,
         pinned: this.pinned,
         tags: [...this.tags]
-      };
+      });
 
       const localNote = await storage.table('notes').getItem(id);
 
@@ -194,7 +211,12 @@ class NotesStore {
 
     await storage.table('notes').removeItem(this.id);
     window.location.href = `#/notes`;
-    document.querySelector('.aside-toggler').click(); // Close the sidebar.
+
+    const asideToggler = document.querySelector('.aside-toggler');
+
+    if (asideToggler) {
+      asideToggler.click();
+    }
 
     const isLocalNote = this.id.includes('local');
 
@@ -319,7 +341,7 @@ class NotesStore {
     this.id = null;
     this.title = '';
     this.content = '';
-    this.pinned = '';
+    this.pinned = false;
     this.tags = [];
     this.saving = false;
     this.createdAt = null;
@@ -365,10 +387,13 @@ class NotesStore {
     const filter = this.filter.toLowerCase();
 
     return notes.filter((note) => {
-      const tagMatch = (note.tags || []).some((tag) => tag.toLowerCase().includes(filter));
+      const title = typeof note.title === 'string' ? note.title : '';
+      const content = typeof note.content === 'string' ? note.content : '';
+      const tagMatch = (Array.isArray(note.tags) ? note.tags : [])
+        .some((tag) => typeof tag === 'string' && tag.toLowerCase().includes(filter));
 
-      return note.title.toLowerCase().includes(filter)
-        || note.content.toLowerCase().includes(filter)
+      return title.toLowerCase().includes(filter)
+        || content.toLowerCase().includes(filter)
         || tagMatch;
     });
   }
@@ -505,7 +530,13 @@ class NotesStore {
     // without blocking the others.
     for (let id in localChanges) {
       const localChange = localChanges[id];
-      const localNote = await storage.table('notes').getItem(id);
+      const storedNote = await storage.table('notes').getItem(id);
+      const localNote = storedNote ? normalizeNote(storedNote) : null;
+
+      if (localNote) {
+        await storage.table('notes').setItem(id, localNote);
+      }
+
       const serverNote = serverNotes.find((serverNote) => serverNote.id === id);
 
       try {
@@ -536,10 +567,20 @@ class NotesStore {
   async syncServerChanges(serverNotes) {
     // Read the local notes once, one IndexedDB read per note on every sync gets slow with thousands of notes.
     const localNotes = {};
+    const staleNotes = [];
 
     await storage.table('notes').iterate((note, id) => {
-      localNotes[id] = note;
+      const normalizedNote = normalizeNote(note);
+      localNotes[id] = normalizedNote;
+
+      if (notesDiffer(note, normalizedNote)) {
+        staleNotes.push(normalizedNote);
+      }
     });
+
+    for (const note of staleNotes) {
+      await storage.table('notes').setItem(note.id, note);
+    }
 
     const newer = (a, b) => Date.parse(a.updated_at) > Date.parse(b.updated_at);
     const changedOnServer = serverNotes.filter((serverNote) => {
@@ -565,7 +606,7 @@ class NotesStore {
 
     for (let serverNote of changedOnServer) {
       const serverNoteWithContent = contents[serverNote.id] || await NotesHttpClient.retrieve(serverNote.id);
-      await storage.table('notes').setItem(serverNote.id, serverNoteWithContent);
+      await storage.table('notes').setItem(serverNote.id, normalizeNote(serverNoteWithContent));
     }
 
     for (let serverNote of serverNotes) {
@@ -578,21 +619,22 @@ class NotesStore {
   }
 
   async uploadNote(localNote) {
-    const serverNote = await NotesHttpClient.update(localNote);
+    const normalizedNote = normalizeNote(localNote);
+    const serverNote = await NotesHttpClient.update(normalizedNote);
 
     // Keep the server copy and its updated_at, otherwise the next sync sees the note as changed again (and uploads it
     // on every sync when the device clock is ahead). Skipped when the note was edited in the meantime.
-    const currentNote = await storage.table('notes').getItem(localNote.id);
+    const currentNote = await storage.table('notes').getItem(normalizedNote.id);
 
-    if (currentNote && currentNote.updated_at === localNote.updated_at) {
-      await storage.table('notes').setItem(serverNote.id, serverNote);
+    if (currentNote && currentNote.updated_at === normalizedNote.updated_at) {
+      await storage.table('notes').setItem(serverNote.id, normalizeNote(serverNote));
     }
 
     return serverNote;
   }
 
   async fetchServerNotes() {
-    return await NotesHttpClient.list(null, null, null, null, null, [
+    const notes = await NotesHttpClient.list(null, null, null, null, null, [
       'id',
       'created_at',
       'updated_at',
@@ -601,6 +643,8 @@ class NotesStore {
       'user_id',
       'tags'
     ]);
+
+    return notes.map(normalizeNote);
   }
 
   async syncCreateChange(serverNotes, id, localNote) {
@@ -614,9 +658,9 @@ class NotesStore {
       return serverNotes;
     }
 
-    const newServerNote = await NotesHttpClient.create(localNote);
+    const newServerNote = await NotesHttpClient.create(normalizeNote(localNote));
 
-    await storage.table('notes').setItem(newServerNote.id, newServerNote);
+    await storage.table('notes').setItem(newServerNote.id, normalizeNote(newServerNote));
 
     if (this.id === localNote.id) {
       await this.select(newServerNote.id);

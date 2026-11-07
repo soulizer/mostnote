@@ -22,6 +22,7 @@ import {Input, InputGroup, InputGroupAddon, InputGroupText, ListGroup, ListGroup
 import {translate} from '../../lang';
 import storage from '../../storage';
 import notes from '../../stores/notes';
+import Icon from '../../components/Icon';
 import account from '../../stores/account';
 
 const LIMIT = 10;
@@ -129,7 +130,7 @@ class QuickSearch extends Component {
           <InputGroup>
             <InputGroupAddon addonType="prepend">
               <InputGroupText className="border-0 rounded-0 bg-transparent pl-4 pr-0">
-                <i className="fa fa-search" />
+                <Icon name="search" />
               </InputGroupText>
             </InputGroupAddon>
 
@@ -145,7 +146,7 @@ class QuickSearch extends Component {
                 <ListGroupItem key={note.id} action active={index === active} tag="button"
                                onMouseEnter={() => this.setState({active: index})}
                                onClick={() => this.select(note)}>
-                  {note.pinned ? <i className="fa fa-thumb-tack mr-2" /> : null}
+                  {note.pinned ? <Icon name="pin" size={12} className="mr-2" /> : null}
                   {note.title}
                 </ListGroupItem>
               ))}
@@ -154,7 +155,7 @@ class QuickSearch extends Component {
                 <ListGroupItem action active={active === results.length} tag="button"
                                onMouseEnter={() => this.setState({active: results.length})}
                                onClick={() => this.create()}>
-                  <i className="fa fa-plus mr-2" />
+                  <Icon name="plus" className="mr-2" />
                   {translate('notes.createNote')}: <strong>{keyword.trim()}</strong>
                 </ListGroupItem>
               ) : null}

@@ -18,6 +18,7 @@
 */
 
 import React, {Component} from 'react';
+import Icon from '../../components/Icon';
 import {Button, Card, CardBody, CardHeader, Col, Row} from 'reactstrap';
 
 class About extends Component {
@@ -54,14 +55,14 @@ class About extends Component {
                 <div className="mb-2">
                   <a href="https://mostnote.com" target="_blank" rel="noopener noreferrer">
                     <Button className="btn-yahoo btn-brand d-block mb-4 d-sm-inline-block mb-sm-0 mr-sm-4">
-                      <i className="fa fa-globe"/>
+                      <Icon name="globe"/>
                       <span>Website</span>
                     </Button>
                   </a>
 
                   <a href="https://github.com/soulizer/mostnote" target="_blank" rel="noopener noreferrer">
                     <Button className="btn-github btn-brand d-block d-sm-inline-block">
-                      <i className="fa fa-github"/>
+                      <Icon name="github"/>
                       <span>GitHub</span>
                     </Button>
                   </a>

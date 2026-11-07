@@ -18,6 +18,7 @@
 */
 
 import React, {Component} from 'react';
+import Icon from '../../components/Icon';
 import {Button, Card, CardBody, CardFooter, CardHeader, Col, Form, FormGroup, Input, Label, Row} from 'reactstrap';
 import {FormattedMessage} from 'react-intl';
 import {translate} from '../../lang';
@@ -118,7 +119,7 @@ class Profile extends Component {
                 </CardBody>
                 <CardFooter>
                   <Button type="submit" color="primary" className="float-right">
-                    <i className="fa fa-save mr-2"/>
+                    <Icon name="save" className="mr-2"/>
                     <FormattedMessage id="profile.save"/>
                   </Button>
                 </CardFooter>
@@ -134,7 +135,7 @@ class Profile extends Component {
                   </p>
 
                   <Button onClick={() => application.install()}>
-                    <i className="fa fa-cloud-download mr-2"/>
+                    <Icon name="download" className="mr-2"/>
                     <FormattedMessage id="profile.install"/>
                   </Button>
                 </CardBody>
@@ -250,14 +251,14 @@ class Profile extends Component {
                   <FormGroup className="text-center py-4">
                     <Button hidden={!online} size="lg" color={user.theme === 'light' ? 'primary' : 'secondary'}
                             outline={true} onClick={() => profile.invalidateCache()}>
-                      <i className="fa fa-eraser mr-2"/>
+                      <Icon name="eraser" className="mr-2"/>
                       <FormattedMessage id="profile.invalidateCache"/>
                     </Button>
                   </FormGroup>
                 </CardBody>
                 <CardFooter>
                   <Button type="submit" color="primary" className="float-right">
-                    <i className="fa fa-save mr-2"/>
+                    <Icon name="save" className="mr-2"/>
                     <FormattedMessage id="profile.save"/>
                   </Button>
                 </CardFooter>

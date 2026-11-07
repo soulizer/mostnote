@@ -18,6 +18,7 @@
 */
 
 import React, {Component} from 'react';
+import Icon from '../../components/Icon';
 import {inject, observer} from 'mobx-react';
 import {Button} from 'reactstrap';
 import {FormattedMessage} from 'react-intl';
@@ -42,7 +43,7 @@ class WelcomeMessage extends Component {
         </p>
 
         <Button color="primary" onClick={() => notes.add()}>
-          <i className="fa fa-plus mr-2"/>
+          <Icon name="plus" className="mr-2"/>
           <FormattedMessage id="notes.newNote"/>
         </Button>
       </div>

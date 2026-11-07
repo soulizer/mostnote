@@ -25,6 +25,7 @@ import {inject, observer} from 'mobx-react';
 import routes from '../../routes';
 import {translate} from '../../lang';
 import QuickSearch from './QuickSearch';
+import Icon from '../../components/Icon';
 
 const NoteHeader = React.lazy(() => import('./NoteHeader'));
 
@@ -90,7 +91,7 @@ class NoteLayout extends Component {
           ) : null}
         </span>
 
-        {note.pinned ? <i className="fa fa-thumb-tack note-list-pin"/> : null}
+        {note.pinned ? <Icon name="pin" size={12} className="note-list-pin"/> : null}
       </NavLink>
     );
   }
@@ -116,36 +117,36 @@ class NoteLayout extends Component {
           <DropdownToggle tag="button" className="sidebar-user-toggle">
             <span className="sidebar-user-avatar">{(user.name || user.email || '?').charAt(0).toUpperCase()}</span>
             <span className="sidebar-user-name">{user.name || user.email}</span>
-            <i className="fa fa-ellipsis-h sidebar-user-more"/>
+            <Icon name="more" className="sidebar-user-more"/>
           </DropdownToggle>
 
           <DropdownMenu>
             <DropdownItem tag={NavLink} to="/profile">
-              <i className="fa fa-user"/>
+              <Icon name="user"/>
               {translate('layout.profile')}
             </DropdownItem>
 
             {user.admin && online ? (
               <DropdownItem tag={NavLink} to="/users">
-                <i className="fa fa-users"/>
+                <Icon name="users"/>
                 {translate('layout.users')}
               </DropdownItem>
             ) : null}
 
             {user.admin && online ? (
               <DropdownItem tag={NavLink} to="/settings">
-                <i className="fa fa-cogs"/>
+                <Icon name="settings"/>
                 {translate('layout.settings')}
               </DropdownItem>
             ) : null}
 
             <DropdownItem tag={NavLink} to="/about">
-              <i className="fa fa-info-circle"/>
+              <Icon name="info"/>
               {translate('layout.about')}
             </DropdownItem>
 
             <DropdownItem tag={NavLink} to="/help">
-              <i className="fa fa-question-circle"/>
+              <Icon name="help"/>
               {translate('layout.help')}
             </DropdownItem>
 
@@ -158,7 +159,7 @@ class NoteLayout extends Component {
                 history.push('/login');
               }}
             >
-              <i className="fa fa-lock"/>
+              <Icon name="lock"/>
               {translate('layout.logout')}
             </DropdownItem>
           </DropdownMenu>
@@ -205,7 +206,7 @@ class NoteLayout extends Component {
           <AppSidebar className="border-right" fixed display="lg">
             <div className="sidebar-toolbar">
               <div className="sidebar-search">
-                <i className="fa fa-search"/>
+                <Icon name="search" className="sidebar-search-icon"/>
                 <input
                   type="text"
                   value={filter}
@@ -214,13 +215,13 @@ class NoteLayout extends Component {
                 />
                 {filter.length ? (
                   <button type="button" className="sidebar-search-clear" onClick={() => notes.updateFilter('')}>
-                    <i className="fa fa-times"/>
+                    <Icon name="x"/>
                   </button>
                 ) : null}
               </div>
 
               <button type="button" className="new-note" onClick={() => notes.add()}>
-                <i className="fa fa-plus"/>
+                <Icon name="plus"/>
                 {translate('notes.newNote')}
               </button>
             </div>
@@ -234,7 +235,7 @@ class NoteLayout extends Component {
               {noteList.length
                 ? noteList.map((note) => this.renderNote(note, user))
                 : notes.syncing
-                  ? <div className="note-list-loading"><i className="fa fa-spinner fa-spin"/></div>
+                  ? <div className="note-list-loading"><Icon name="loader" spin/></div>
                   : <div className="note-list-empty">{translate('notes.noNotes')}</div>}
             </nav>
 
