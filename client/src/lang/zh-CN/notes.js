@@ -47,4 +47,9 @@ export default {
   conflict: 'Conflict',
   syncingGotDisabled: '由于未知错误，笔记同步已被禁用',
   notFoundOrNotSynced: '笔记不存在或尚未同步',
+  untitled: '无标题笔记',
+  tags: '标签',
+  addTag: '添加标签，回车确认',
+  saving: '保存中...',
+  noNotes: '暂无笔记',
 }

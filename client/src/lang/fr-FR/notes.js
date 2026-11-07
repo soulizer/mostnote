@@ -47,4 +47,9 @@ export default {
   conflict: 'Conflit',
   syncingGotDisabled: 'La synchronisation des notes a été désactivée en raison d\'erreurs inattendues.',
   notFoundOrNotSynced: 'La note n\'a pas été trouvée ou n\'est pas encore synchronisée.',
+  untitled: 'Note sans titre',
+  tags: 'Étiquettes',
+  addTag: 'Ajouter une étiquette et appuyer sur Entrée',
+  saving: 'Enregistrement...',
+  noNotes: 'Aucune note pour le moment',
 }

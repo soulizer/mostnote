@@ -20,27 +20,30 @@
 import React, {Component} from 'react';
 import {inject, observer} from 'mobx-react';
 import TextareaAutosize from 'react-textarea-autosize';
+import moment from 'moment';
 import WelcomeMessage from './WelcomeMessage';
 import NoteContextMenu from './NoteContextMenu';
+import {translate} from '../../lang';
 
 class Notes extends Component {
-  scrollY = null;
-
   constructor(props) {
     super(props);
     this.textarea = React.createRef();
+    this.scrollContainer = React.createRef();
     this.state = {
       contextMenu: {
         visible: false,
         x: 0,
         y: 0
       },
-      disableCustomMenu: false
+      disableCustomMenu: false,
+      tagInput: ''
     };
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleContextMenu = this.handleContextMenu.bind(this);
     this.hideContextMenu = this.hideContextMenu.bind(this);
     this.handleShowNativeMenu = this.handleShowNativeMenu.bind(this);
+    this.handleTagKeyDown = this.handleTagKeyDown.bind(this);
   }
 
   handleShowNativeMenu() {
@@ -54,9 +57,6 @@ class Notes extends Component {
   }
 
   handleKeyDown(event) {
-    // preserve previous behavior
-    this.scrollY = window.scrollY;
-
     // Handle Tab key: insert 4 spaces at cursor position or replace selection
     if (event.key === 'Tab' || event.keyCode === 9) {
       event.preventDefault();
@@ -123,6 +123,18 @@ class Notes extends Component {
     });
   }
 
+  handleTagKeyDown(event) {
+    if (event.key !== 'Enter') {
+      return;
+    }
+
+    event.preventDefault();
+
+    const { notes } = this.props;
+
+    notes.addTag(this.state.tagInput);
+    this.setState({tagInput: ''});
+  }
 
   componentDidMount() {
     const {
@@ -145,7 +157,7 @@ class Notes extends Component {
     document.addEventListener('click', this.hideContextMenu);
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps) {
     const {
       notes,
       match
@@ -158,11 +170,14 @@ class Notes extends Component {
       notes.select(id);
     }
 
-    // A different note was loaded, so drop the scroll offset of the previous one.
+    // A different note was loaded, so drop the scroll offset and tag input of the previous one.
     if (this.noteId !== notes.id) {
       this.noteId = notes.id;
-      this.scrollY = 0;
-      window.scrollTo(0, 0);
+      this.setState({tagInput: ''});
+
+      if (this.scrollContainer.current) {
+        this.scrollContainer.current.scrollTop = 0;
+      }
     }
   }
 
@@ -172,7 +187,7 @@ class Notes extends Component {
 
     // Ensure we're in a browser environment before touching document
     if (typeof document !== 'undefined' && document && document.title !== undefined) {
-      document.title = 'Plainpad';
+      document.title = 'MostNote';
     }
 
     // Clean up event listener
@@ -187,11 +202,15 @@ class Notes extends Component {
 
     const {
       id,
+      title,
       content,
-      pinned
+      pinned,
+      tags,
+      saving,
+      updatedAt
     } = notes;
 
-    if (!id && !content) {
+    if (!id) {
       return <WelcomeMessage/>;
     }
 
@@ -199,19 +218,111 @@ class Notes extends Component {
       user
     } = account;
 
-    const { contextMenu } = this.state;
+    const {contextMenu, tagInput} = this.state;
 
     return (
-      <div className="animated fadeIn h-100 py-2">
-        <TextareaAutosize
-          ref={this.textarea}
-          className={`note-content ${user.line === 'full' ? 'full-line' : 'narrow-line'}`}
-          value={content}
-          onKeyDown={this.handleKeyDown}
-          onContextMenu={this.handleContextMenu}
-          onChange={(event) => notes.updateContent(event.target.value)}
-          onHeightChange={(height) => notes.applyScrollFix(this.textarea.current, this.scrollY, height)}
-        />
+      <div className="editor-shell">
+        <div className="editor-toolbar">
+          <div className={`editor-save-state ${saving ? 'saving' : ''}`}>
+            <i className={`fa ${saving ? 'fa-spinner fa-spin' : 'fa-check'}`}/>
+            <span>{saving ? translate('notes.saving') : translate('notes.saved')}</span>
+          </div>
+
+          <div className="editor-actions">
+            <button
+              type="button"
+              className={`editor-action ${pinned ? 'active' : ''}`}
+              onClick={() => pinned ? notes.unpin() : notes.pin()}
+              title={translate(pinned ? 'notes.unpin' : 'notes.pin')}
+            >
+              <i className="fa fa-thumb-tack"/>
+            </button>
+
+            <button
+              type="button"
+              className="editor-action"
+              onClick={() => notes.download()}
+              title={translate('notes.download')}
+            >
+              <i className="fa fa-download"/>
+            </button>
+
+            {typeof navigator !== 'undefined' && navigator.canShare ? (
+              <button
+                type="button"
+                className="editor-action"
+                onClick={() => notes.share()}
+                title={translate('notes.share')}
+              >
+                <i className="fa fa-share-alt"/>
+              </button>
+            ) : null}
+
+            <button
+              type="button"
+              className="editor-action editor-action-danger"
+              onClick={() => notes.delete()}
+              title={translate('notes.delete')}
+            >
+              <i className="fa fa-trash"/>
+            </button>
+          </div>
+        </div>
+
+        <div className="editor-scroll" ref={this.scrollContainer}>
+          <div className={`editor-content ${user.line === 'full' ? 'full-line' : 'narrow-line'}`}>
+            <input
+              type="text"
+              className="note-title-input"
+              value={title}
+              placeholder={translate('notes.untitled')}
+              onChange={(event) => notes.updateTitle(event.target.value)}
+            />
+
+            <div className="note-tags">
+              <i className="fa fa-tags note-tags-icon"/>
+
+              {tags.map((tag) => (
+                <span className="note-tag" key={tag}>
+                  {tag}
+                  <button type="button" onClick={() => notes.removeTag(tag)} aria-label={translate('notes.delete')}>
+                    <i className="fa fa-times"/>
+                  </button>
+                </span>
+              ))}
+
+              <input
+                type="text"
+                className="note-tag-input"
+                value={tagInput}
+                placeholder={translate('notes.addTag')}
+                onChange={(event) => this.setState({tagInput: event.target.value})}
+                onKeyDown={this.handleTagKeyDown}
+              />
+            </div>
+
+            <TextareaAutosize
+              ref={this.textarea}
+              className="note-content"
+              value={content}
+              minRows={12}
+              onKeyDown={this.handleKeyDown}
+              onContextMenu={this.handleContextMenu}
+              onChange={(event) => notes.updateContent(event.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="editor-status">
+          <div className="editor-status-left">
+            <span>{translate('notes.characters')}: {content.length}</span>
+            <span>{translate('notes.tags')}: {tags.length}</span>
+          </div>
+
+          <div className="editor-status-right">
+            {updatedAt ? `${translate('notes.modified')}: ${moment(updatedAt).format('MMM DD, YYYY HH:mm')}` : ''}
+          </div>
+        </div>
 
         <NoteContextMenu
           visible={contextMenu.visible}

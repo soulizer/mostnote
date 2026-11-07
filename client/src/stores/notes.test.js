@@ -20,8 +20,9 @@
 import notes from './notes';
 
 const list = [
-  {title: 'Shopping list', content: 'milk (2) [organic]'},
-  {title: 'Other', content: 'nothing here'},
+  {title: 'Shopping list', content: 'milk (2) [organic]', tags: ['home']},
+  {title: 'Other', content: 'nothing here', tags: []},
+  {title: 'Ideas', content: 'not much', tags: ['work', 'urgent']},
 ];
 
 it('filters notes by title or content, ignoring case', () => {
@@ -29,7 +30,17 @@ it('filters notes by title or content, ignoring case', () => {
   expect(notes.filterNotes(list)).toHaveLength(1);
 
   notes.filter = '';
-  expect(notes.filterNotes(list)).toHaveLength(2);
+  expect(notes.filterNotes(list)).toHaveLength(3);
+});
+
+it('filters notes by tag', () => {
+  notes.filter = 'urgent';
+  expect(notes.filterNotes(list)).toHaveLength(1);
+
+  notes.filter = 'WORK';
+  expect(notes.filterNotes(list)).toHaveLength(1);
+
+  notes.filter = '';
 });
 
 it('accepts regular expression characters in the filter', () => {

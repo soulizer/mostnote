@@ -19,7 +19,7 @@
 
 import React, {Component} from 'react';
 import {inject, observer} from 'mobx-react';
-import {Button, Jumbotron} from 'reactstrap';
+import {Button} from 'reactstrap';
 import {FormattedMessage} from 'react-intl';
 import logo from '../../assets/img/brand/logo.svg';
 
@@ -30,25 +30,23 @@ class WelcomeMessage extends Component {
     } = this.props;
 
     return (
-      <div className="animated fadeIn h-100 py-5">
-        <Jumbotron className="bg-white text-center welcome-message my-5">
-          <img src={logo} alt="MostNote Logo" className="welcome-logo"/>
+      <div className="welcome">
+        <img src={logo} alt="MostNote Logo" className="welcome-logo"/>
 
-          <h1 className="display-5">
-            <FormattedMessage id="notes.welcome"/>
-          </h1>
+        <h1>
+          <FormattedMessage id="notes.welcome"/>
+        </h1>
 
-          <p className="lead mb-4">
-            <FormattedMessage id="notes.selectNoteOrCreate"/>
-          </p>
+        <p>
+          <FormattedMessage id="notes.selectNoteOrCreate"/>
+        </p>
 
-          <Button color="primary" size="lg" onClick={() => notes.add()}>
-            <i className="fa fa-plus mr-2"/>
-            <FormattedMessage id="notes.newNote"/>
-          </Button>
-        </Jumbotron>
+        <Button color="primary" onClick={() => notes.add()}>
+          <i className="fa fa-plus mr-2"/>
+          <FormattedMessage id="notes.newNote"/>
+        </Button>
       </div>
-    )
+    );
   }
 }
 

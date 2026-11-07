@@ -1,3 +1,5 @@
+<?php
+
 /*
   Plainpad - Self Hosted Note Taking App
 
@@ -17,29 +19,33 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>
 */
 
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-const propTypes = {
-  children: PropTypes.node,
-};
+class AddTagsToNotesTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('notes', function (Blueprint $table) {
+            $table->json('tags')->nullable()->after('content');
+        });
+    }
 
-const defaultProps = {};
-
-class NoteFooter extends Component {
-  render() {
-    // eslint-disable-next-line
-    const {children, ...attributes} = this.props;
-
-    return (
-      <React.Fragment>
-
-      </React.Fragment>
-    );
-  }
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('notes', function (Blueprint $table) {
+            $table->dropColumn('tags');
+        });
+    }
 }
-
-NoteFooter.propTypes = propTypes;
-NoteFooter.defaultProps = defaultProps;
-
-export default NoteFooter;

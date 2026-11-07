@@ -61,7 +61,7 @@ class RecoverPassword extends Component {
       <div className="app flex-row align-items-center">
         <Container>
           <Row className="justify-content-center">
-            <Col md="8" lg="6">
+            <Col xs="12" sm="8" md="6" lg="4">
               <CardGroup>
                 <Card className="auth-card">
                   <CardBody>
@@ -85,11 +85,7 @@ class RecoverPassword extends Component {
                                value={email}
                                onChange={event => this.email = event.target.value}/>
                       </InputGroup>
-                      <Row>
-                        <Col xs="6">
-                          <Button color="primary" className="px-4">Recover</Button>
-                        </Col>
-                      </Row>
+                      <Button type="submit" color="primary" block>Recover</Button>
                     </Form>
                   </CardBody>
                 </Card>

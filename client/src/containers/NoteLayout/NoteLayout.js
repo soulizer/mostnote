@@ -17,30 +17,19 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>
 */
 
-import React, { Component, Suspense } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
-import * as router from 'react-router-dom';
-import {Button, Container, Input, InputGroup, InputGroupAddon, InputGroupText} from 'reactstrap';
-
-import {
-  AppHeader,
-  AppSidebar,
-  AppSidebarFooter,
-  AppSidebarForm,
-  AppSidebarHeader,
-  AppSidebarNav2 as AppSidebarNav, AppAside,
-} from '@coreui/react';
-import routes from '../../routes';
-import NoteAside from './NoteAside';
+import React, {Component, Suspense} from 'react';
+import {NavLink, Redirect, Route, Switch} from 'react-router-dom';
+import {Container, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown} from 'reactstrap';
+import {AppHeader, AppSidebar, AppSidebarFooter} from '@coreui/react';
 import {inject, observer} from 'mobx-react';
+import routes from '../../routes';
 import {translate} from '../../lang';
-import NoteCopyright from './NoteCopyright';
 import QuickSearch from './QuickSearch';
 
 const NoteHeader = React.lazy(() => import('./NoteHeader'));
 
 class NoteLayout extends Component {
-  state = {quickSearch: false, filterFocused: false};
+  state = {quickSearch: false};
 
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>;
 
@@ -56,12 +45,10 @@ class NoteLayout extends Component {
   restoreMenuState = () => {
     // AppSidebar always adds the class on mount, so the stored state must be applied afterwards.
     document.body.classList.toggle('sidebar-lg-show', localStorage.getItem('Plainpad.Sidebar') !== 'closed');
-    document.body.classList.toggle('aside-menu-lg-show', localStorage.getItem('Plainpad.Aside') === 'open');
 
     this.menuObserver = new MutationObserver(() => {
       const {classList} = document.body;
       localStorage.setItem('Plainpad.Sidebar', classList.contains('sidebar-lg-show') ? 'open' : 'closed');
-      localStorage.setItem('Plainpad.Aside', classList.contains('aside-menu-lg-show') ? 'open' : 'closed');
     });
 
     this.menuObserver.observe(document.body, {attributes: true, attributeFilter: ['class']});
@@ -77,18 +64,114 @@ class NoteLayout extends Component {
     this.menuObserver.disconnect();
   }
 
-  onMainClick() {
-    if (document.body.classList.contains('aside-menu-show')) {
-      document.body.classList.remove('aside-menu-show');
-    }
+  renderNote(note, user) {
+    const preview = (note.content || '').replace(/\n/g, ' ').trim().substring(0, 80);
+    const tags = note.tags || [];
+
+    return (
+      <NavLink
+        key={note.id}
+        to={'/notes/' + note.id}
+        className="note-list-item"
+        activeClassName="active"
+      >
+        <span className="note-list-body">
+          <span className="note-list-title">{note.title || translate('notes.untitled')}</span>
+
+          {user.view === 'comfortable' && preview ? (
+            <span className="note-list-preview">{preview}</span>
+          ) : null}
+
+          {tags.length ? (
+            <span className="note-list-tags">
+              {tags.slice(0, 2).map((tag) => <span key={tag} className="note-list-tag">{tag}</span>)}
+              {tags.length > 2 ? <span className="note-list-tag-more">+{tags.length - 2}</span> : null}
+            </span>
+          ) : null}
+        </span>
+
+        {note.pinned ? <i className="fa fa-thumb-tack note-list-pin"/> : null}
+      </NavLink>
+    );
+  }
+
+  renderUserMenu() {
+    const {
+      account,
+      application,
+      history
+    } = this.props;
+
+    const {
+      user
+    } = account;
+
+    const {
+      online
+    } = application;
+
+    return (
+      <AppSidebarFooter>
+        <UncontrolledDropdown drop="up" className="sidebar-user-dropdown">
+          <DropdownToggle tag="button" className="sidebar-user-toggle">
+            <span className="sidebar-user-avatar">{(user.name || user.email || '?').charAt(0).toUpperCase()}</span>
+            <span className="sidebar-user-name">{user.name || user.email}</span>
+            <i className="fa fa-ellipsis-h sidebar-user-more"/>
+          </DropdownToggle>
+
+          <DropdownMenu>
+            <DropdownItem tag={NavLink} to="/profile">
+              <i className="fa fa-user"/>
+              {translate('layout.profile')}
+            </DropdownItem>
+
+            {user.admin && online ? (
+              <DropdownItem tag={NavLink} to="/users">
+                <i className="fa fa-users"/>
+                {translate('layout.users')}
+              </DropdownItem>
+            ) : null}
+
+            {user.admin && online ? (
+              <DropdownItem tag={NavLink} to="/settings">
+                <i className="fa fa-cogs"/>
+                {translate('layout.settings')}
+              </DropdownItem>
+            ) : null}
+
+            <DropdownItem tag={NavLink} to="/about">
+              <i className="fa fa-info-circle"/>
+              {translate('layout.about')}
+            </DropdownItem>
+
+            <DropdownItem tag={NavLink} to="/help">
+              <i className="fa fa-question-circle"/>
+              {translate('layout.help')}
+            </DropdownItem>
+
+            <DropdownItem
+              className="sidebar-user-logout"
+              onClick={async (event) => {
+                event.preventDefault();
+                // Wait for the server to revoke the session before leaving the app.
+                await account.logout();
+                history.push('/login');
+              }}
+            >
+              <i className="fa fa-lock"/>
+              {translate('layout.logout')}
+            </DropdownItem>
+          </DropdownMenu>
+        </UncontrolledDropdown>
+      </AppSidebarFooter>
+    );
   }
 
   render() {
     const {
       account,
       application,
-      notes,
-      history
+      notes
     } = this.props;
 
     const {
@@ -108,80 +191,58 @@ class NoteLayout extends Component {
       filter
     } = notes;
 
-    const nav = {
-      items: noteList.map((note) => {
-        return {
-          name: user.view === 'compact' ? note.title : note.content.substring(0, 100).replace("\n", '').trim(),
-          url: '/notes/' + note.id,
-          icon: note.pinned ? 'fa fa-thumb-tack' : 'd-none',
-        };
-      })
-    };
+    const isNotes = this.props.location && this.props.location.pathname.startsWith('/notes');
 
     return (
       <div className={`app ${user.theme === 'dark' ? 'dark' : ''}`}>
         <AppHeader fixed>
-          <Suspense  fallback={this.loading()}>
-            <NoteHeader onLogout={async (event) => {
-              event.preventDefault();
-              // Wait for the server to revoke the session before leaving the app.
-              await account.logout();
-              history.push('/login');
-            }}/>
+          <Suspense fallback={this.loading()}>
+            <NoteHeader/>
           </Suspense>
         </AppHeader>
+
         <div className="app-body">
           <AppSidebar className="border-right" fixed display="lg">
-            <AppSidebarHeader />
-            <AppSidebarForm />
+            <div className="sidebar-toolbar">
+              <div className="sidebar-search">
+                <i className="fa fa-search"/>
+                <input
+                  type="text"
+                  value={filter}
+                  placeholder={translate('notes.search')}
+                  onChange={(event) => notes.updateFilter(event.target.value)}
+                />
+                {filter.length ? (
+                  <button type="button" className="sidebar-search-clear" onClick={() => notes.updateFilter('')}>
+                    <i className="fa fa-times"/>
+                  </button>
+                ) : null}
+              </div>
 
-            <InputGroup className="border-bottom">
-              <InputGroupAddon addonType="prepend" className="rounded-0">
-                <InputGroupText className="filter-addon-content rounded-0 border-0 pr-0">
-                  <i className="fa fa-search" />
-                </InputGroupText>
-              </InputGroupAddon>
+              <button type="button" className="new-note" onClick={() => notes.add()}>
+                <i className="fa fa-plus"/>
+                {translate('notes.newNote')}
+              </button>
+            </div>
 
-              <Input value={filter} className="filter rounded-0 border-0 shadow-none pl-2"
-                     placeholder={translate('notes.filter').toUpperCase()}
-                     onFocus={() => this.setState({filterFocused: true})}
-                     onBlur={() => this.setState({filterFocused: false})}
-                     onChange={(event) => notes.updateFilter(event.target.value)} />
+            <div className="note-list-heading">
+              <span>{translate('notes.notes')}</span>
+              <span>{noteList.length}</span>
+            </div>
 
-              <InputGroupAddon addonType="append" className="rounded-0 quick-search-trigger d-none d-md-flex"
-                               hidden={this.state.filterFocused || !!filter.length}
-                               onMouseDown={(event) => event.preventDefault()}
-                               onClick={this.toggleQuickSearch}>
-                <InputGroupText className="filter-addon-content rounded-0 border-0">
-                  <kbd>{navigator.platform.startsWith('Mac') ? '\u2318' : 'Ctrl'} + K</kbd>
-                </InputGroupText>
-              </InputGroupAddon>
+            <nav className="note-list">
+              {noteList.length
+                ? noteList.map((note) => this.renderNote(note, user))
+                : <div className="note-list-empty">{translate('notes.noNotes')}</div>}
+            </nav>
 
-              <InputGroupAddon addonType="prepend" className="rounded-0 clear-filter" hidden={!filter.length}
-                               onClick={() => notes.updateFilter('')}>
-                <InputGroupText className="filter-addon-content rounded-0 border-0">
-                  <i className="fa fa-times" />
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
-
-            <Button color="primary" outline block className="new-note text-muted text-left rounded-0 border-top-0 border-left-0 border-right-0 border-bottom"
-                    onClick={() => notes.add()}>
-              <i className="fa fa-plus mr-2 ml-1" />
-              {translate('notes.newNote').toUpperCase()}
-            </Button>
-
-            <Suspense>
-            <AppSidebarNav navConfig={nav} {...this.props} router={router}/>
-            </Suspense>
-            <AppSidebarFooter>
-              <NoteCopyright />
-            </AppSidebarFooter>
+            {this.renderUserMenu()}
           </AppSidebar>
+
           <QuickSearch isOpen={this.state.quickSearch} toggle={this.toggleQuickSearch} />
 
-          <main className="main" onClick={this.onMainClick.bind(this)}>
-            <Container fluid className="h-100">
+          <main className="main">
+            <Container fluid className={`h-100 ${isNotes ? 'container-flush' : ''}`}>
               <Suspense fallback={this.loading()}>
                 <Switch>
                   {routes.map((route, idx) => {
@@ -201,11 +262,6 @@ class NoteLayout extends Component {
               </Suspense>
             </Container>
           </main>
-          <AppAside fixed>
-            <Suspense fallback={this.loading()}>
-              <NoteAside />
-            </Suspense>
-          </AppAside>
 
           <div className="offline-mode" hidden={online}>
             Offline

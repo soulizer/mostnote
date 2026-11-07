@@ -37,7 +37,9 @@ class NotesController extends Controller
         $request->validate( [
             'title' => 'required|string',
             'content' => 'present|nullable|string', // An emptied note is still a valid note.
-            'pinned' => 'required|boolean'
+            'pinned' => 'required|boolean',
+            'tags' => 'nullable|array',
+            'tags.*' => 'string|max:50'
         ]);
 
         $note = new Note;
@@ -46,6 +48,7 @@ class NotesController extends Controller
         $note->title = $request->input('title');
         $note->content = $request->input('content') ?? '';
         $note->pinned = $request->input('pinned');
+        $note->tags = $request->input('tags') ?? [];
         $note->save();
 
         return response()->json($note, 201);
@@ -56,7 +59,9 @@ class NotesController extends Controller
         $request->validate( [
             'title' => 'required|string',
             'content' => 'present|nullable|string', // An emptied note is still a valid note.
-            'pinned' => 'required|boolean'
+            'pinned' => 'required|boolean',
+            'tags' => 'nullable|array',
+            'tags.*' => 'string|max:50'
         ]);
 
         $note = Note::find($id);
@@ -72,6 +77,7 @@ class NotesController extends Controller
         $note->title = $request->input('title');
         $note->content = $request->input('content') ?? '';
         $note->pinned = $request->input('pinned');
+        $note->tags = $request->input('tags') ?? [];
         $note->save();
 
         return response()->json($note, 200);
@@ -102,6 +108,7 @@ class NotesController extends Controller
             'content',
             'title',
             'pinned',
+            'tags',
             'created_at',
             'updated_at'
         ];
@@ -132,10 +139,16 @@ class NotesController extends Controller
         // contents are not loaded at all.
         if ($filter) {
             $occurrences = Note::where('user_id', $user->id)
-                ->select('id', 'title', 'content')
+                ->select('id', 'title', 'content', 'tags')
                 ->get()
                 ->filter(function($note) use ($filter) {
-                    return stripos($note->title, $filter) !== false || stripos($note->content, $filter) !== false;
+                    $tagMatch = collect($note->tags ?? [])->contains(function ($tag) use ($filter) {
+                        return stripos($tag, $filter) !== false;
+                    });
+
+                    return stripos($note->title, $filter) !== false
+                        || stripos($note->content, $filter) !== false
+                        || $tagMatch;
                 })
                 ->map(function($note) {
                     return $note->id;

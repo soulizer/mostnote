@@ -18,15 +18,10 @@
 */
 
 import React, {Component} from 'react';
-import {NavLink} from 'react-router-dom';
-import {DropdownItem, DropdownMenu, DropdownToggle, Nav, NavItem, UncontrolledDropdown} from 'reactstrap';
 import PropTypes from 'prop-types';
-
-import {AppAsideToggler, AppNavbarBrand, AppSidebarToggler} from '@coreui/react';
-import logo from '../../assets/img/brand/logo.svg'
-import minimizedLogo from '../../assets/img/brand/minimized-logo.svg'
+import {AppNavbarBrand, AppSidebarToggler} from '@coreui/react';
 import {inject, observer} from 'mobx-react';
-import {FormattedMessage} from 'react-intl';
+import logo from '../../assets/img/brand/logo.svg';
 
 const propTypes = {
   children: PropTypes.node,
@@ -39,9 +34,7 @@ class NoteHeader extends Component {
     const {
       account,
       notes,
-      application,
-      profile,
-      onLogout
+      profile
     } = this.props;
 
     const {
@@ -52,90 +45,36 @@ class NoteHeader extends Component {
       user
     } = account;
 
-    const {
-      config,
-      online
-    } = application;
-
     return (
       <React.Fragment>
-        <AppSidebarToggler className="d-lg-none sidebar-toggler" display="md" mobile/>
-        <AppNavbarBrand
-          full={{src: logo, width: 32, height: 32, alt: 'MostNote Logo'}}
-          minimized={{src: minimizedLogo, width: 30, height: 30, alt: 'MostNote Logo'}}
-        >
-          <img src={logo} alt="MostNote Logo" width={32} height={32} className="navbar-brand-logo mr-2"/>
+        <AppSidebarToggler className="sidebar-toggler header-action d-lg-none" display="md" mobile>
+          <i className="fa fa-bars"/>
+        </AppSidebarToggler>
+
+        <AppNavbarBrand>
+          <img src={logo} alt="MostNote Logo" width={28} height={28} className="navbar-brand-logo"/>
           <span className="navbar-brand-title">MOSTNOTE</span>
         </AppNavbarBrand>
-        <AppSidebarToggler className="d-md-down-none" display="lg"/>
 
-        <Nav className="ml-auto" navbar>
-          <NavItem>
-            <i className={`fa fa-refresh fa-2x rounded-circle ${syncing ? 'syncing' : ''}`}
-               onClick={() => notes.sync()}
-            />
-          </NavItem>
+        <div className="ml-auto header-actions">
+          <button
+            type="button"
+            className={`header-action ${syncing ? 'syncing' : ''}`}
+            onClick={() => notes.sync()}
+            aria-label="Sync notes"
+          >
+            <i className="fa fa-refresh"/>
+          </button>
 
-          <NavItem>
-            <i className={`fa ${user.theme === 'light' ? 'fa-moon-o' : 'fa-sun-o'} fa-2x rounded-circle theme-toggler`}
-               onClick={() => profile.toggleTheme()}
-            />
-          </NavItem>
-
-          <UncontrolledDropdown nav direction="down">
-            <DropdownToggle nav className={config && config.updates && config.updates.length > 0 ? 'updates-available' : ''}>
-              <i className="fa fa-user-circle fa-2x" hidden={config && config.updates && config.updates.length}/>
-              <i className="fa fa-arrow-circle-up fa-2x" hidden={!config || !config.updates || !config.updates.length}/>
-            </DropdownToggle>
-            <DropdownMenu right>
-              <DropdownItem header tag="div" className="text-center bg-white">
-                <strong>{user.name}</strong>
-              </DropdownItem>
-              <NavLink to="/profile" className="text-dark text-decoration-none">
-                <DropdownItem>
-                  <i className="fa fa-user" />
-                  <FormattedMessage id="layout.profile" />
-                </DropdownItem>
-              </NavLink>
-
-              <NavLink to="/users" className="text-dark text-decoration-none" hidden={!user.admin}
-                       disabled={!online}>
-                <DropdownItem>
-                  <i className="fa fa-users" />
-                  <FormattedMessage id="layout.users" />
-                </DropdownItem>
-              </NavLink>
-              <NavLink to="/settings" className={`text-dark text-decoration-none ${config && config.updates && config.updates.length > 0 ? 'updates-available' : ''}`}
-                       hidden={!user.admin} disabled={!online}>
-                <DropdownItem>
-                  <i className="fa fa-cogs" />
-                  <FormattedMessage id="layout.settings" />
-                </DropdownItem>
-              </NavLink>
-
-              <NavLink to="/about" className="text-dark text-decoration-none">
-                <DropdownItem>
-                  <i className="fa fa-info-circle" />
-                  <FormattedMessage id="layout.about" />
-                </DropdownItem>
-              </NavLink>
-
-              <NavLink to="/help" className="text-dark text-decoration-none">
-                <DropdownItem>
-                  <i className="fa fa-question-circle" />
-                  <FormattedMessage id="layout.help" />
-                </DropdownItem>
-              </NavLink>
-
-              <DropdownItem onClick={event => onLogout(event)}>
-                <i className="fa fa-lock"/>
-                <FormattedMessage id="layout.logout" />
-              </DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-        </Nav>
-        <AppAsideToggler className={`aside-toggler d-md-down-none shadow-none ${syncing ? 'syncing' : ''}`}/>
-        <AppAsideToggler className={`aside-toggler d-lg-none shadow-none ${syncing ? 'syncing' : ''}`} mobile />
+          <button
+            type="button"
+            className="header-action"
+            onClick={() => profile.toggleTheme()}
+            aria-label="Toggle theme"
+          >
+            <i className={`fa ${user.theme === 'light' ? 'fa-moon-o' : 'fa-sun-o'}`}/>
+          </button>
+        </div>
       </React.Fragment>
     );
   }
@@ -144,6 +83,6 @@ class NoteHeader extends Component {
 NoteHeader.propTypes = propTypes;
 NoteHeader.defaultProps = defaultProps;
 
-export default inject('account', 'notes', 'application', 'profile')(
+export default inject('account', 'notes', 'profile')(
   observer(NoteHeader)
 );

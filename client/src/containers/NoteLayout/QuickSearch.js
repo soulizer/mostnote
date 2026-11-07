@@ -47,7 +47,15 @@ class QuickSearch extends Component {
     const needle = keyword.trim().toLowerCase();
 
     return notes
-      .filter((note) => !needle || note.title.toLowerCase().includes(needle))
+      .filter((note) => {
+        if (!needle) {
+          return true;
+        }
+
+        return note.title.toLowerCase().includes(needle)
+          || note.content.toLowerCase().includes(needle)
+          || (note.tags || []).some((tag) => tag.toLowerCase().includes(needle));
+      })
       .sort((a, b) => {
         if (!a.pinned !== !b.pinned) {
           return a.pinned ? -1 : 1; // pinned notes go first

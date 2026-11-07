@@ -17,7 +17,12 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>
 */
 
-// MostNote 配色：浅灰页面、白色表面、细描边、黄色强调。
+// MostNote 设计令牌：浅灰页面、白色表面、细描边、黄色强调、全部直角。
+
+$enable-rounded: false;
+$enable-shadows: false;
+$enable-gradients: false;
+
 $blue: #1c7ed6 !default;
 $indigo: #6d28d9 !default;
 $purple: #6d28d9 !default;
@@ -56,25 +61,37 @@ $font-family-sans-serif: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI
   "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif !default;
 $font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
 $font-size-base: .9375rem;
-$line-height-base: 1.6;
+$font-size-sm: .8125rem;
+$font-size-lg: 1rem;
+$line-height-base: 1.5;
+$line-height-sm: 1.4;
+$small-font-size: 80%;
+
+$h1-font-size: 1.5rem;
+$h2-font-size: 1.25rem;
+$h3-font-size: 1.125rem;
+$h4-font-size: 1rem;
+$h5-font-size: .9375rem;
+$h6-font-size: .875rem;
 $headings-font-weight: 600;
+$headings-line-height: 1.4;
 $headings-color: $body-color;
 
 $border-color: #e0e2e8;
-$border-radius: 6px;
-$border-radius-lg: 8px;
-$border-radius-sm: 4px;
+$border-radius: 0;
+$border-radius-lg: 0;
+$border-radius-sm: 0;
 
 $link-color: $body-color;
 $link-hover-color: #000;
 $link-hover-decoration: underline;
 
-$grid-gutter-width: 15px;
+$grid-gutter-width: 16px;
 
 // 顶栏
 $navbar-height: 56px;
 $navbar-bg: #fff;
-$navbar-brand-width: 205px;
+$navbar-brand-width: auto;
 $navbar-active-color: $body-color;
 $navbar-color: $gray-700;
 $navbar-hover-color: $body-color;
@@ -87,7 +104,8 @@ $navbar-border: (
 );
 
 // 左侧笔记栏
-$sidebar-width: 250px;
+$sidebar-width: 300px;
+$mobile-sidebar-width: 280px;
 $sidebar-bg: #fff;
 $sidebar-color: $body-color;
 $sidebar-header-bg: #fff;
@@ -103,8 +121,6 @@ $sidebar-nav-link-active-bg: #fff4c4;
 $sidebar-nav-link-active-color: $body-color;
 $sidebar-nav-link-active-icon-color: $gray-700;
 $sidebar-nav-link-disabled-color: $gray-500;
-$sidebar-nav-link-padding-x: .75rem;
-$sidebar-nav-link-padding-y: .5rem;
 $sidebar-footer-bg: #fff;
 $sidebar-minimizer-bg: #fff;
 $sidebar-minimizer-hover-bg: #f7f8fa;
@@ -122,47 +138,85 @@ $aside-menu-borders: (
   )
 );
 
-// 卡片与表单
+// 卡片
 $card-border-color: $border-color;
-$card-border-radius: 10px;
+$card-border-radius: 0;
 $card-cap-bg: #fff;
 $card-cap-border-color: #eef0f3;
 $card-bg: #fff;
-$card-inner-border-radius: 9px;
+$card-inner-border-radius: 0;
+$card-spacer-y: 1rem;
+$card-spacer-x: 1.25rem;
+$card-cap-padding-y: .75rem;
+$card-cap-padding-x: 1.25rem;
 
+// 表单
 $input-color: $body-color;
 $input-bg: #fff;
 $input-border-color: $border-color;
-$input-focus-border-color: #c3a21a;
+$input-focus-border-color: #1c1c1e;
 $input-focus-box-shadow: none;
-$input-border-radius: 6px;
-$input-border-radius-lg: 6px;
-$input-border-radius-sm: 4px;
+$input-box-shadow: none;
+$input-border-radius: 0;
+$input-border-radius-lg: 0;
+$input-border-radius-sm: 0;
 $input-placeholder-color: $gray-500;
-$input-height: 40px;
+$input-height: 36px;
+$input-height-sm: 30px;
+$input-height-lg: 42px;
+$input-btn-focus-box-shadow: none;
+$input-btn-focus-width: 0;
+$custom-select-border-radius: 0;
 
-$custom-select-border-radius: 6px;
-
-$btn-border-radius: 6px;
-$btn-border-radius-lg: 8px;
-$btn-border-radius-sm: 4px;
+// 按钮
+$btn-border-radius: 0;
+$btn-border-radius-lg: 0;
+$btn-border-radius-sm: 0;
 $btn-font-weight: 600;
+$btn-font-size: .875rem;
+$btn-padding-y: .4rem;
+$btn-padding-x: .75rem;
+$btn-line-height: 1.5;
+$btn-focus-box-shadow: none;
+$btn-active-box-shadow: none;
+$btn-focus-width: 0;
 
-$dropdown-border-radius: 8px;
+// 下拉
+$dropdown-border-radius: 0;
 $dropdown-border-color: $border-color;
 $dropdown-link-hover-bg: #f7f8fa;
 $dropdown-link-active-bg: #fff4c4;
 $dropdown-link-active-color: $body-color;
 $dropdown-box-shadow: 0 10px 28px rgba(15, 23, 42, .14);
+$dropdown-font-size: .875rem;
+$dropdown-padding-y: .25rem;
+$dropdown-item-padding-y: .4rem;
+$dropdown-item-padding-x: .75rem;
 
-$modal-content-border-radius: 10px;
+// 弹窗
+$modal-content-border-radius: 0;
 $modal-content-border-color: $border-color;
+$modal-content-box-shadow: 0 18px 48px rgba(15, 23, 42, .18);
+$modal-inner-padding: 1.25rem;
+$modal-header-padding-y: 1rem;
+$modal-header-padding-x: 1.25rem;
+$modal-footer-border-color: #eef0f3;
 
+// 表格
 $table-head-color: $gray-600;
 $table-head-bg: #fafbfc;
 $table-border-color: #eef0f3;
 $table-hover-bg: #fafbfc;
+$table-cell-padding: .65rem .75rem;
+$table-cell-padding-sm: .4rem .5rem;
 
+// 其它
 $text-muted: $gray-600;
 $dark-gray: #262a31;
 $sidebar-nav-title-color: $gray-600;
+$badge-border-radius: 0;
+$nav-pills-border-radius: 0;
+$pagination-border-radius: 0;
+$tooltip-border-radius: 0;
+$popover-border-radius: 0;
+$toast-border-radius: 0;

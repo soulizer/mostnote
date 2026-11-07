@@ -47,4 +47,9 @@ export default {
   conflict: 'Konflikt',
   syncingGotDisabled: 'Synkningen av anteckningen har stängts av pga oväntade fel.',
   notFoundOrNotSynced: 'Anteckningen kunde inte hittas eller har inte synkats än.',
+  untitled: 'Namnlös anteckning',
+  tags: 'Taggar',
+  addTag: 'Lägg till tagg och tryck Enter',
+  saving: 'Sparar...',
+  noNotes: 'Inga anteckningar än',
 }

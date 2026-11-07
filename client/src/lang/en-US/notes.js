@@ -47,4 +47,9 @@ export default {
   conflict: 'Conflict',
   syncingGotDisabled: 'The note synchronization got disabled due to unexpected errors.',
   notFoundOrNotSynced: 'The note was not found or is not synced yet.',
+  untitled: 'Untitled note',
+  tags: 'Tags',
+  addTag: 'Add tag and press Enter',
+  saving: 'Saving...',
+  noNotes: 'No notes yet',
 }

@@ -52,7 +52,7 @@ class Login extends Component {
 
         <Container>
           <Row className="justify-content-center">
-            <Col md="8" lg="6">
+            <Col xs="12" sm="8" md="6" lg="4">
               <CardGroup>
                 <Card className="auth-card">
                   <CardBody>
@@ -91,21 +91,18 @@ class Login extends Component {
                                disabled={loggingIn}
                                onChange={(event) => this.setState({password: event.target.value})}/>
                       </InputGroup>
-                      <Row>
-                        <Col xs="6">
-                          <Button color="primary" className="px-4" disabled={disabled}>
-                            {loggingIn
-                              ? <span className="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"/>
-                              : null}
-                            Login
-                          </Button>
-                        </Col>
-                        <Col xs="6" className="text-right">
-                          <Link to={'/recover-password'} className="px-0">
-                            Forgot password?
-                          </Link>
-                        </Col>
-                      </Row>
+                      <Button type="submit" color="primary" block disabled={disabled}>
+                        {loggingIn
+                          ? <span className="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"/>
+                          : null}
+                        Login
+                      </Button>
+
+                      <div className="auth-links">
+                        <Link to={'/recover-password'}>
+                          Forgot password?
+                        </Link>
+                      </div>
                     </Form>
                   </CardBody>
                 </Card>

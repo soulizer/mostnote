@@ -50,6 +50,7 @@ class Note extends Model
         'content',
         'title',
         'pinned',
+        'tags',
     ];
 
     /**
@@ -69,6 +70,7 @@ class Note extends Model
      */
     protected $casts = [
         'pinned' => 'boolean',
+        'tags' => 'array',
     ];
 
     /**

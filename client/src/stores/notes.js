@@ -39,6 +39,8 @@ class NotesStore {
   _title = '';
   content = '';
   pinned = false;
+  tags = [];
+  saving = false;
   createdAt = null;
   updatedAt = null;
   syncErrors = 0;
@@ -82,9 +84,10 @@ class NotesStore {
 
   async add(title = '') {
     this.id = null;
-    this.title = title || this.filter || 'New Note ...';
-    this.content = this.title;
+    this.title = title || translate('notes.untitled');
+    this.content = '';
     this.pinned = false;
+    this.tags = [];
     this.createdAt = null;
     this.updatedAt = null;
     await this.save();
@@ -110,6 +113,7 @@ class NotesStore {
     this.title = localNote.title;
     this.content = localNote.content;
     this.pinned = localNote.pinned;
+    this.tags = localNote.tags || [];
     this.createdAt = localNote.created_at;
     this.updatedAt = localNote.updated_at;
 
@@ -134,36 +138,43 @@ class NotesStore {
   // }
 
   async save() {
-    let id = this.id;
+    this.saving = true;
 
-    const isNewNote = id === null;
+    try {
+      let id = this.id;
 
-    if (isNewNote) {
-      id = `local-${uuidv4()}`;
-    }
+      const isNewNote = id === null;
 
-    const isLocalNote = id.includes('local');
+      if (isNewNote) {
+        id = `local-${uuidv4()}`;
+      }
 
-    const note = {
-      id,
-      user_id: account.user.id,
-      created_at: this.createdAt || moment.utc().format(),
-      updated_at: moment.utc().format(),
-      title: this.title,
-      content: this.content,
-      pinned: this.pinned
-    };
+      const isLocalNote = id.includes('local');
 
-    const localNote = await storage.table('notes').getItem(id);
+      const note = {
+        id,
+        user_id: account.user.id,
+        created_at: this.createdAt || moment.utc().format(),
+        updated_at: moment.utc().format(),
+        title: this.title,
+        content: this.content,
+        pinned: this.pinned,
+        tags: [...this.tags]
+      };
 
-    await storage.table('notes').setItem(id, {...localNote, ...note});
+      const localNote = await storage.table('notes').getItem(id);
 
-    await this.commitChange(id, isLocalNote ? 'create' : 'update');
+      await storage.table('notes').setItem(id, {...localNote, ...note});
 
-    this.updateListItem({...localNote, ...note});
+      await this.commitChange(id, isLocalNote ? 'create' : 'update');
 
-    if (isNewNote) {
-      window.location.href = `#/notes/${id}`;
+      this.updateListItem({...localNote, ...note});
+
+      if (isNewNote) {
+        window.location.href = `#/notes/${id}`;
+      }
+    } finally {
+      this.saving = false;
     }
   }
 
@@ -237,10 +248,34 @@ class NotesStore {
     this.updateListItem(localNote);
   }
 
+  updateTitle(title) {
+    this.title = title;
+    this.scheduleSave();
+  }
+
   updateContent(content) {
     this.content = content;
+    this.scheduleSave();
+  }
 
-    this.title = this.getTitleByContent(content);
+  addTag(tag) {
+    const value = tag.trim();
+
+    if (!value || this.tags.includes(value)) {
+      return;
+    }
+
+    this.tags = [...this.tags, value];
+    this.scheduleSave();
+  }
+
+  removeTag(tag) {
+    this.tags = this.tags.filter((item) => item !== tag);
+    this.scheduleSave();
+  }
+
+  scheduleSave() {
+    this.saving = true;
 
     if (this.saveTimeout) {
       clearTimeout(this.saveTimeout);
@@ -285,6 +320,8 @@ class NotesStore {
     this.title = '';
     this.content = '';
     this.pinned = '';
+    this.tags = [];
+    this.saving = false;
     this.createdAt = null;
     this.updatedAt = null;
 
@@ -328,7 +365,11 @@ class NotesStore {
     const filter = this.filter.toLowerCase();
 
     return notes.filter((note) => {
-      return note.title.toLowerCase().includes(filter) || note.content.toLowerCase().includes(filter);
+      const tagMatch = (note.tags || []).some((tag) => tag.toLowerCase().includes(filter));
+
+      return note.title.toLowerCase().includes(filter)
+        || note.content.toLowerCase().includes(filter)
+        || tagMatch;
     });
   }
 
@@ -557,7 +598,8 @@ class NotesStore {
       'updated_at',
       'pinned',
       'title',
-      'user_id'
+      'user_id',
+      'tags'
     ]);
   }
 
@@ -643,6 +685,8 @@ decorate(NotesStore, {
   _title: observable,
   content: observable,
   pinned: observable,
+  tags: observable,
+  saving: observable,
   createdAt: observable,
   updatedAt: observable
 });

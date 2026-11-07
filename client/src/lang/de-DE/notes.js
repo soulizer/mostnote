@@ -47,4 +47,9 @@ export default {
   conflict: 'Konflikt',
   syncingGotDisabled: 'Die Notensynchronisation wurde aufgrund von unerwarteten Fehlern deaktiviert.',
   notFoundOrNotSynced: 'Die Notiz wurde nicht gefunden oder ist noch nicht synchronisiert.',
+  untitled: 'Unbenannte Notiz',
+  tags: 'Schlagwörter',
+  addTag: 'Tag hinzufügen und Enter drücken',
+  saving: 'Speichern...',
+  noNotes: 'Noch keine Notizen',
 }
