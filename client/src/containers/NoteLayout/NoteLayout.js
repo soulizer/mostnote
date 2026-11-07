@@ -233,7 +233,9 @@ class NoteLayout extends Component {
             <nav className="note-list">
               {noteList.length
                 ? noteList.map((note) => this.renderNote(note, user))
-                : <div className="note-list-empty">{translate('notes.noNotes')}</div>}
+                : notes.syncing
+                  ? <div className="note-list-loading"><i className="fa fa-spinner fa-spin"/></div>
+                  : <div className="note-list-empty">{translate('notes.noNotes')}</div>}
             </nav>
 
             {this.renderUserMenu()}
